@@ -1,4 +1,4 @@
-# Sample react dice app
+# Make 10
 
 This project was bootstrapped with [Create React App](https://github.com/C-JACKnon/make10).
 

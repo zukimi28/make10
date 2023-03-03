@@ -6,12 +6,15 @@ import DiceMaxValueSetting from './components/dice_max_value_setting/DiceMaxValu
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
+import { outputConsoleLog } from './service/makeTenCalcService';
 
 /**
  * アプリケーションコンポーネント
  * @returns アプリケーションコンポーネント
  */
 function App() {
+  outputConsoleLog('Call service test.');
+
   // 表示するサイコロの目
   const [diceValue, setDiceValue] = useState<number>(DiceDefaultMaxValue);
 
