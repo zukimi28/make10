@@ -1,0 +1,26 @@
+#app-container {
+  background-color: #001e3c;
+  height: 100vh;
+}
+
+#app-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+#app-components {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+#dice-value {
+  margin: 10px 0px 30px 0px;
+  font-size: xx-large;
+}

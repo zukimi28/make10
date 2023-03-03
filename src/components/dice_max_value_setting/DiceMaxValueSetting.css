@@ -1,0 +1,15 @@
+#dice-max-value-setting-component {
+  width: 100%;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#dice-max-value {
+  margin: 0px 30px;
+  font-size: xx-large;
+}
