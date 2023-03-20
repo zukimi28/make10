@@ -1,0 +1,24 @@
+#app-header {
+  margin-bottom: 30px;
+}
+
+#header-core {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 10px;
+  color: #469b98;
+}
+
+#app-title {
+  font-size: xx-large;
+}
+
+#header-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+}

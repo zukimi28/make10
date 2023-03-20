@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import './App.css';
-import { DiceMinValue, DiceDefaultMaxValue, DiceValueHistoryNumber } from './constants/diceSetting';
-import DiceHistory from './components/dice_history/DiceHistory';
-import DiceMaxValueSetting from './components/dice_max_value_setting/DiceMaxValueSetting';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import { outputConsoleLog } from './service/makeTenCalcService';
+import { DiceMinValue, DiceDefaultMaxValue, DiceValueHistoryNumber } from './core/constants/diceSetting';
+import { outputConsoleLog } from './core/service/makeTenCalcService';
+import Header from './components/header/Header';
+import MakeTen from './components/make_ten/MakeTen';
 
 /**
  * アプリケーションコンポーネント
@@ -77,8 +74,15 @@ function App() {
   }
 
   return (
-    <div id="app-container">
-      <Card sx={{ maxWidth: 500 }} id="app-card">
+    <div id="app">
+      <div id="app-container">
+        <div id="app-core">
+          <Header />
+          <MakeTen />
+        </div>
+      </div>
+      {/* <Container maxWidth="sm"></Container> */}
+      {/* <Card sx={{ maxWidth: 500 }} id="app-card">
         <CardContent>
           <div id="app-components">
             <DiceMaxValueSetting diceMaxValue={diceMaxValue} changeDiceMaxValue={changeDiceMaxValue}></DiceMaxValueSetting>
@@ -89,7 +93,8 @@ function App() {
             <Button variant="contained" onClick={handleCreateRandomNumber}>START</Button>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
+
     </div>
   );
 }

@@ -3,5 +3,5 @@
  * @param {string} log - 出力するログ
  */
 export const outputConsoleLog = (log: string): void => {
-  console.info(log);
+  // console.info(log);
 }
