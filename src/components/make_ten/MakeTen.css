@@ -1,4 +1,4 @@
-#number-button-area {
+#button-area {
   margin: 0px 10px;
   position: relative;
 }
@@ -9,8 +9,18 @@
   border-radius: 50%;
   position: absolute;
   transition: all 1s 0s ease;
+  cursor: pointer;
 }
 
 .number-button-animation {
   transition: all 0.3s 0s ease;
+}
+
+.calc-button {
+  background-color: #ffffff;
+  text-align: center;
+  border-radius: 50%;
+  position: absolute;
+  transition: all 1s 0s ease;
+  cursor: pointer;
 }
