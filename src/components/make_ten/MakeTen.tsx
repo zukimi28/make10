@@ -246,7 +246,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	 * @param type - 押下した数字ボタンの種類
 	 */
 	const handleClickButton = (type: ButtonType) => {
-		console.log('Clicked ' + ButtonType[type] + ' button!!');
+		console.log('Clicked ' + ButtonType[type] + ' button!');
 
 	}
 
