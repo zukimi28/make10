@@ -16,6 +16,7 @@ function App() {
 	 * 初回レンダリング時処理
 	 */
 	useEffect(() => {
+    console.log("初期表示"); // TODO: デプロイ正常動作確認のため追加
 		createProblem(); // 問題の生成
 	}, []);
 
