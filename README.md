@@ -1,18 +1,18 @@
-# Make 10
+# Make10
 
-This project was bootstrapped with [Create React App](https://github.com/C-JACKnon/make10).
+[Make10](https://github.com/C-JACKnon/make10) とは、ランダムに生成される4つの数字から、四則演算を用いて「10」を作り出すゲームです。
 
-## Available Scripts
+## 開発コマンド
 
-In the project directory, you can run:
-
+以下のコマンドはターミナルで実行して使用する。
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+開発者モードで [http://localhost:3000](http://localhost:3000) にアプリケーションをデバッグ実行させる。  
+ソースコードを編集し、保存することで自動的にリビルドを実行して画面に反映される。  
+終了するにはターミナルより以下のコマンドを実行する。
+```
+Shift + c
+```
 
 ### `npm test`
 
@@ -31,8 +31,5 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### `npm run deploy`
 
-デプロイ用のビルドコマンド  
-最後に以下のコマンドを入力
-```
-Shift + ZZ
-```
+ソースコードをビルドし、github-pagesにデプロイを行う。  
+ビルドしたソースコードは `make10/docs/` に配置される。
