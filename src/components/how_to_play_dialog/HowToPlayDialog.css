@@ -1,0 +1,12 @@
+#scroll-dialog-title {
+  text-align: center;
+  padding: 16px 0px 6px 0px;
+}
+
+#scroll-dialog-content {
+  max-width: 360px;
+}
+
+#scroll-dialog-action {
+  justify-content: center;
+}
