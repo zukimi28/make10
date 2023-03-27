@@ -1,6 +1,6 @@
 # Make10
 
-[Make10](https://github.com/C-JACKnon/make10) とは、ランダムに生成される4つの数字から、四則演算を用いて「10」を作り出すゲームです。
+[Make10](https://c-jacknon.github.io/make10/) とは、ランダムに生成される4つの数字から、四則演算を用いて「10」を作り出すゲームです。
 
 ## 開発コマンド
 
