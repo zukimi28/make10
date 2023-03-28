@@ -14,13 +14,17 @@ function App() {
 	const [problemNumbers, setProblemNumbers] = useState<number[]>([0, 0, 0, 0]);
 
   // 遊び方ダイアログの表示フラグ
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  // 遊び方ダイアログの初期表示フラグ
+  const [isInitDisplay, setIsInitDisplay] = useState(true);
 
   /**
 	 * 初回レンダリング時処理
 	 */
 	useEffect(() => {
-    changeHowToPlayDialog(true);
+    setIsInitDisplay(true); // 遊び方ダイアログ初期表示フラグON
+    changeHowToPlayDialog(true); // 遊び方ダイアログを表示
 		createProblem(); // 問題の生成
 	}, []);
 
@@ -52,8 +56,16 @@ function App() {
     <div id="app">
       <div id="app-container">
         <div id="app-core">
-          <HowToPlayDialog isOpen={isOpen} closeHowToPlayDialog={() => changeHowToPlayDialog(false)} />
-          <Header openHowToPlayDialog={() => changeHowToPlayDialog(true)} />
+          <HowToPlayDialog
+            isOpen={isOpen}
+            isInitDisplay={isInitDisplay}
+            closeHowToPlayDialog={() => changeHowToPlayDialog(false)} />
+          <Header
+            openHowToPlayDialog={() => {
+              setIsInitDisplay(false);
+              changeHowToPlayDialog(true);
+            }}
+          />
           <MakeTen problemNumbers={problemNumbers} />
         </div>
       </div>

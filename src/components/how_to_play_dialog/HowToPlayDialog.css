@@ -1,6 +1,13 @@
 #scroll-dialog-title {
   text-align: center;
   padding: 16px 0px 6px 0px;
+  position: relative;
+}
+
+#close-how-to-play-dialog-button {
+  position: absolute;
+  right: 4px;
+  top: 4px;
 }
 
 #scroll-dialog-content {
