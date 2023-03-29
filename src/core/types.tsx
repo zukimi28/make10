@@ -1,3 +1,12 @@
+/**
+ * ストレージに保存するデータ種類
+ */
+export enum StorageData {
+  /**
+   * ページを開いた日付
+   */
+  OpenPageDate = 'OpenPageDate',
+}
 
 /**
  * ボタン種類

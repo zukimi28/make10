@@ -3,7 +3,7 @@ import './App.css';
 import Header from './components/header/Header';
 import HowToPlayDialog from './components/how_to_play_dialog/HowToPlayDialog';
 import MakeTen from './components/make_ten/MakeTen';
-import { ButtonType } from './core/types';
+import { ButtonType, StorageData } from './core/types';
 
 /**
  * アプリケーションコンポーネント
@@ -23,10 +23,38 @@ function App() {
 	 * 初回レンダリング時処理
 	 */
 	useEffect(() => {
-    setIsInitDisplay(true); // 遊び方ダイアログ初期表示フラグON
-    changeHowToPlayDialog(true); // 遊び方ダイアログを表示
-		createProblem(); // 問題の生成
+    const today = getNowDate(); // 今日の日付を取得
+    // 今日既にページを開いていた場合
+    if (localStorage.getItem(StorageData.OpenPageDate) === today) {
+      console.log('今日は既に開いてます。');
+    }
+    // 今日始めてページを開いた場合
+    else {
+      localStorage.setItem(StorageData.OpenPageDate, today); // ストレージに今日の日付を格納
+      setIsInitDisplay(true); // 遊び方ダイアログ初期表示フラグON
+      changeHowToPlayDialog(true); // 遊び方ダイアログを表示
+    }
+    createProblem(); // TODO: 問題の生成
 	}, []);
+
+  /**
+   * 現在日付の取得(YYYYMMDD)
+   */
+  const getNowDate = (): string => {
+    const dateObj = new Date();
+    const yearStr = dateObj.getFullYear().toString();
+    const month = dateObj.getMonth() + 1;
+    let monthStr = month.toString();
+    if (monthStr.length === 1) {
+      monthStr = '0' + monthStr;
+    }
+    const date = dateObj.getDate();
+    let dateStr = date.toString();
+    if (dateStr.length === 1) {
+      dateStr = '0' + dateStr;
+    }
+    return yearStr + monthStr + dateStr;
+  }
 
   /**
    * 問題の生成

@@ -59,8 +59,9 @@ const HowToPlayDialog = ({ isOpen, isInitDisplay, closeHowToPlayDialog }: Props)
             id="close-how-to-play-dialog-button"
             size="large"
             sx={{ display: isInitDisplay ? 'none' : 'inline-flex' }}
+            onClick={closeHowToPlayDialog} 
           >
-            <HighlightOffIcon onClick={closeHowToPlayDialog} />
+            <HighlightOffIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent id="scroll-dialog-content" dividers={true}>
