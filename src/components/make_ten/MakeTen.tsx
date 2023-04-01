@@ -31,8 +31,10 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	const defaultButtonAreaHeight = 3 * defaultButtonSize 
 																	+ Math.floor(defaultButtonSize * numberButtonMarginPerHeight)
 																	+ Math.floor(defaultButtonSize * calcButtonMarginPerHeight);
-	const resizeEventInterval: number = 100; // リサイズイベントの発生インターバル(ms)
+	const resizeEventInterval: number = 50; // リサイズイベントの発生インターバル(ms)
+	const buttonAnimationStopInterval: number = 200; // ボタンのアニメーション一時停止時間(ms)
 	let resizeEventSetTimeoutId: number = 0; // リサイズイベント時のsetTimeoutID
+	let buttonAnimationSetTimeoutId: number = 0; // ボタンアニメーションの一時解除setTimeoutID
 
 	// 数字ボタンに動的に設定するスタイル連想配列
 	const [numberButtonStyles, setNumberButtonStyles] = useState<NumberButtonStyles>({
@@ -63,6 +65,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		const newButtonSize = setButtonSize(); // ボタンサイズの設定
 		const newButtonAreaHeight = setButtonAreaSize(newButtonSize); // ボタンエリアのサイズの設定
 		initButtonLayout(newButtonSize, newButtonAreaHeight); // ボタンの初期位置設定
+		stopButtonAnimation(); // ボタンアニメーションの一時解除
 
 		// ブラウザリサイズイベントの登録
 		window.addEventListener('resize', (): void => {
@@ -72,12 +75,32 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 					const newButtonSize = setButtonSize(); // ボタンサイズの設定
 					const newButtonAreaHeight = setButtonAreaSize(newButtonSize); // ボタンエリアのサイズの設定
 					initButtonLayout(newButtonSize, newButtonAreaHeight); // ボタンの初期位置設定
+					stopButtonAnimation(); // ボタンのアニメーションの一時解除
 					window.clearTimeout(resizeEventSetTimeoutId); // タイムアウトイベントの削除
 					resizeEventSetTimeoutId = 0; // IDリセット
 				}, resizeEventInterval);
 			}
 		});
 	}, []);
+
+	/**
+	 * ボタンのアニメーションの一時解除
+	 */
+	const stopButtonAnimation = (): void => {
+		// アニメーション無効
+		setIsButtonAnimation(false);
+
+		// タイムアウトが既に走っている場合
+		if (buttonAnimationSetTimeoutId !== 0) {
+			window.clearTimeout(buttonAnimationSetTimeoutId); // タイムアウトイベントの削除
+		}
+		// タイムアウトスタート
+		buttonAnimationSetTimeoutId = window.setTimeout(() => {
+			setIsButtonAnimation(true); // アニメーション有効
+			window.clearTimeout(buttonAnimationSetTimeoutId); // タイムアウトイベントの削除
+			buttonAnimationSetTimeoutId = 0; // IDリセット
+		}, buttonAnimationStopInterval);
+	}
 
 	/**
 	 * ボタン表示エリア幅の取得
