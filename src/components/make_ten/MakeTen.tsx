@@ -25,8 +25,8 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		left: '0px',
 	}
 	const buttonMarginPerWidth: number = 1/4; // ボタン幅に対するボタン間マージンの割合
-	const numberButtonMarginPerHeight: number = 2/3; // 数字ボタン高さに対する数字ボタンと回答エリア間マージンの割当
-	const calcButtonMarginPerHeight: number = 1/3; // 演算ボタン高さに対する演算ボタンと回答エリア間マージンの割当
+	const numberButtonMarginPerHeight: number = 3/2; // 数字ボタン高さに対する数字ボタンと回答エリア間マージンの割当
+	const calcButtonMarginPerHeight: number = 1/2; // 演算ボタン高さに対する数字ボタンと演算ボタン間マージンの割当
 	// ボタンエリア高さのデフォルト値(px)
 	const defaultButtonAreaHeight = 3 * defaultButtonSize 
 																	+ Math.floor(defaultButtonSize * numberButtonMarginPerHeight)
@@ -52,6 +52,9 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		multiply: defaultButtonStyle,
 		division: defaultButtonStyle,
 	});
+
+	// ボタンアニメーション有効フラグ
+	const [isButtonAnimation, setIsButtonAnimation] = useState(false);
 
 	/**
 	 * 初回レンダリング時処理
@@ -195,22 +198,22 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			...prevNumberButtonStyles,
 			first: {
 				...prevNumberButtonStyles.first,
-				top: '0px',
+				top: (buttonSize + buttonSize * numberButtonMarginPerHeight) + 'px',
 				left: '0px',
 			},
 			second: {
 				...prevNumberButtonStyles.second,
-				top: '0px',
+				top: (buttonSize + buttonSize * numberButtonMarginPerHeight) + 'px',
 				left: (buttonSize + buttonMargin) + 'px',
 			},
 			third: {
 				...prevNumberButtonStyles.third,
-				top: '0px',
+				top: (buttonSize + buttonSize * numberButtonMarginPerHeight) + 'px',
 				left: (2 * (buttonSize + buttonMargin)) + 'px',
 			},
 			fourth: {
 				...prevNumberButtonStyles.fourth,
-				top: '0px',
+				top: (buttonSize + buttonSize * numberButtonMarginPerHeight) + 'px',
 				left: (3 * (buttonSize + buttonMargin)) + 'px',
 			},
 		}));
@@ -251,49 +254,53 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	}
 
 	return (
-	
-		<div id="button-area" style={{height: buttonAreaHeight + 'px'}}>
-			<div
-				className="number-button"
-				style={numberButtonStyles.first}
-				onClick={() => handleClickButton(ButtonType.FirstNumber)}
-			>{problemNumbers[ButtonType.FirstNumber]}</div>
-			<div
-				className="number-button"
-				style={numberButtonStyles.second}
-				onClick={() => handleClickButton(ButtonType.SecondNumber)}
-			>{problemNumbers[ButtonType.SecondNumber]}</div>
-			<div
-				className="number-button"
-				style={numberButtonStyles.third}
-				onClick={() => handleClickButton(ButtonType.ThirdNumber)}
-			>{problemNumbers[ButtonType.ThirdNumber]}</div>
-			<div
-				className="number-button"
-				style={numberButtonStyles.fourth}
-				onClick={() => handleClickButton(ButtonType.FourthNumber)}
-			>{problemNumbers[ButtonType.FourthNumber]}</div>
-			<div
-				className="calc-button"
-				style={calcButtonStyles.plus}
-				onClick={() => handleClickButton(ButtonType.Plus)}
-			>+</div>
-			<div
-				className="calc-button"
-				style={calcButtonStyles.minus}
-				onClick={() => handleClickButton(ButtonType.Minus)}
-			>-</div>
-			<div
-				className="calc-button"
-				style={calcButtonStyles.multiply}
-				onClick={() => handleClickButton(ButtonType.Multiply)}
-			>×</div>
-			<div
-				className="calc-button"
-				style={calcButtonStyles.division}
-				onClick={() => handleClickButton(ButtonType.Division)}
-			>÷</div>
-		</div>
+		<>
+			<div id="button-area" style={{height: buttonAreaHeight + 'px'}}>
+				<div
+					className={`${"number-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					style={numberButtonStyles.first}
+					onClick={() => handleClickButton(ButtonType.FirstNumber)}
+				>{problemNumbers[ButtonType.FirstNumber]}</div>
+				<div
+					className={`${"number-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					style={numberButtonStyles.second}
+					onClick={() => handleClickButton(ButtonType.SecondNumber)}
+				>{problemNumbers[ButtonType.SecondNumber]}</div>
+				<div
+					className={`${"number-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					style={numberButtonStyles.third}
+					onClick={() => handleClickButton(ButtonType.ThirdNumber)}
+				>{problemNumbers[ButtonType.ThirdNumber]}</div>
+				<div
+					className={`${"number-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					style={numberButtonStyles.fourth}
+					onClick={() => handleClickButton(ButtonType.FourthNumber)}
+				>{problemNumbers[ButtonType.FourthNumber]}</div>
+				<div
+					className={`${"plus-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					style={calcButtonStyles.plus}
+					onClick={() => handleClickButton(ButtonType.Plus)}
+				>+</div>
+				<div
+					className={`${"minus-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					style={calcButtonStyles.minus}
+					onClick={() => handleClickButton(ButtonType.Minus)}
+				>-</div>
+				<div
+					className={`${"multiply-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					style={calcButtonStyles.multiply}
+					onClick={() => handleClickButton(ButtonType.Multiply)}
+				>×</div>
+				<div
+					className={`${"division-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					style={calcButtonStyles.division}
+					onClick={() => handleClickButton(ButtonType.Division)}
+				>÷</div>
+			</div>
+			<div id="reset-button" onClick={() => handleClickButton(ButtonType.Reset)}>
+				Reset
+			</div>
+		</>
 	);
 }
 

@@ -98,7 +98,7 @@ function App() {
 
   return (
     <div id="app">
-      <div id="app-container">
+      <div id="app-container" className="app-container-center">
         <div id="app-core">
           <Header />
           <MakeTen problemNumbers={problemNumbers} />

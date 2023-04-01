@@ -35,6 +35,10 @@ export enum ButtonType {
    * 「÷」ボタン
    */
   Division = 7,
+  /**
+   * リセットボタン
+   */
+  Reset = 8,
 }
 
 /**
