@@ -14,10 +14,6 @@
   cursor: pointer;
 }
 
-.number-button-animation {
-  transition: all 0.3s 0s ease;
-}
-
 .plus-button {
   background-color: #d7ffd4;
 }
@@ -35,7 +31,7 @@
 }
 
 .button-animation {
-  transition: all 1s 0s ease;
+  transition: all 0.3s 0s ease;
 }
 
 #reset-button {
@@ -45,4 +41,5 @@
   text-align: center;
   margin: 70px auto auto auto;
   border-radius: 7px;
+  cursor: pointer;
 }
