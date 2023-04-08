@@ -1,3 +1,4 @@
+import { height } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 import { ButtonStyle, NumberCalcButtonStyles, ButtonType, ButtonAreaSize } from '../../core/types';
 import './MakeTen.css';
@@ -15,6 +16,11 @@ type Props = {
  * @returns MakeTenコンポーネント
  */
 const MakeTen = ({problemNumbers}: Props): JSX.Element => {
+	// 数字ボタンと演算ボタンの表示エリアサイズのデフォルト値
+	const defaultButtonAreaSize: ButtonAreaSize = {
+		width: 300,
+		height: 600,
+	};
 	const defaultButtonSize = 30; // 数字ボタンと演算ボタンのサイズのデフォルト値(px)
 	// 数字ボタンと演算ボタンに動的に設定するスタイルのデフォルト値
 	const defaultButtonStyle: ButtonStyle = {
@@ -25,11 +31,13 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		left: '0px',
 	}
 	const buttonMarginPerWidth: number = 1/4; // ボタン幅に対するボタン間マージンの割合
-	const numberButtonMarginPerHeight: number = 3/2; // 数字ボタン高さに対する数字ボタンと回答エリア間マージンの割当
-	const calcButtonMarginPerHeight: number = 1/2; // 演算ボタン高さに対する数字ボタンと演算ボタン間マージンの割当
+	const selectedButtonAreaPerHeight: number = 3; // 数字ボタン高さに対する選択したボタン表示エリアの高さの割合
+	const numberButtonBottomMarginPerHeight: number = 1/2; // 数字ボタン高さに対する数字ボタン下の余白の高さの割合
+	const calcButtonBottomMarginPerHeight: number = 1; // 演算ボタン高さに対する演算ボタン下の余白の高さの割合
 	const resizeEventInterval: number = 50; // リサイズイベントの発生インターバル(ms)
 	const buttonAnimationStopInterval: number = 200; // ボタンのアニメーション一時停止時間(ms)
 	const selectedButtonsCalcWaitTime: number = 500; // 選択したボタンの計算開始までの待機時間
+	const maxAppContainerWidth: number = 500; // 最大アプリケーション幅(px)
 	let resizeEventSetTimeoutId: number = 0; // リサイズイベント時のsetTimeoutID
 	let buttonAnimationSetTimeoutId: number = 0; // ボタンアニメーションの一時解除setTimeoutID
 
@@ -52,10 +60,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	const [buttonSize, setButtonSize] = useState(defaultButtonSize);
 
 	// ボタンエリアのサイズ(px)
-	const [buttonAreaSize, setButtonAreaSize] = useState<ButtonAreaSize>({
-		width: 100,
-		height: 100,
-	});
+	const [buttonAreaSize, setButtonAreaSize] = useState<ButtonAreaSize>(defaultButtonAreaSize);
 
 	// ボタンアニメーション有効フラグ
 	const [isButtonAnimation, setIsButtonAnimation] = useState(false);
@@ -64,16 +69,13 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	 * 初回レンダリング時処理
 	 */
 	useEffect(() => {
-		const buttonAreaWidth = getButtonAreaWidth(); // ボタンエリアの幅を取得
-		const buttonSize = setButtonSizeStyle(buttonAreaWidth); // ボタンサイズの設定
-		const buttonAreaHeight = getButtonAreaHeight(buttonSize); // ボタンエリアの高さを取得
-		setButtonSize(buttonSize); // ボタンサイズを更新
-		const buttonAreaSize: ButtonAreaSize = {
-			width: buttonAreaWidth,
-			height: buttonAreaHeight,
-		};
-		setButtonAreaSize(buttonAreaSize); // ボタンエリアのサイズを更新
-		initAllButtonLayout(buttonSize, buttonAreaSize); // ボタンの初期位置設定
+		const newButtonAreaSize = getButtonAreaSize(); // ボタンエリアのサイズを取得
+		const newButtonSize = setButtonSizeStyle(newButtonAreaSize); // ボタンサイズの設定
+		// ボタンエリアの高さをボタンサイズを加味した高さに調整
+		newButtonAreaSize.height = getButtonAreaHeightRefButtonSize(newButtonSize, newButtonAreaSize.height);
+		setButtonSize(newButtonSize); // ボタンサイズを更新
+		setButtonAreaSize(newButtonAreaSize); // ボタンエリアのサイズを更新
+		initAllButtonLayout(newButtonSize, newButtonAreaSize); // ボタンの初期位置設定
 		stopButtonAnimation(); // ボタンアニメーションの一時解除
 
 		// ブラウザリサイズイベントの登録
@@ -81,16 +83,13 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			// タイムアウトが走っていない場合
 			if (resizeEventSetTimeoutId === 0) {
 				resizeEventSetTimeoutId = window.setTimeout(() => {
-					const buttonAreaWidth = getButtonAreaWidth(); // ボタンエリアの幅を取得
-					const buttonSize = setButtonSizeStyle(buttonAreaWidth); // ボタンサイズの設定
-					const buttonAreaHeight = getButtonAreaHeight(buttonSize); // ボタンエリアの高さを取得
-					setButtonSize(buttonSize); // ボタンサイズを更新
-					const buttonAreaSize: ButtonAreaSize = {
-						width: buttonAreaWidth,
-						height: buttonAreaHeight,
-					};
-					setButtonAreaSize(buttonAreaSize); // ボタンエリアのサイズを更新
-					initAllButtonLayout(buttonSize, buttonAreaSize); // ボタンの初期位置設定
+					const newButtonAreaSize = getButtonAreaSize(); // ボタンエリアのサイズを取得
+					const newButtonSize = setButtonSizeStyle(newButtonAreaSize); // ボタンサイズの設定
+					// ボタンエリアの高さをボタンサイズを加味した高さに調整
+					newButtonAreaSize.height = getButtonAreaHeightRefButtonSize(newButtonSize, newButtonAreaSize.height);
+					setButtonSize(newButtonSize); // ボタンサイズを更新
+					setButtonAreaSize(newButtonAreaSize); // ボタンエリアのサイズを更新
+					initAllButtonLayout(newButtonSize, newButtonAreaSize); // ボタンの初期位置設定
 					stopButtonAnimation(); // ボタンアニメーションの一時解除
 					window.clearTimeout(resizeEventSetTimeoutId); // タイムアウトイベントの削除
 					resizeEventSetTimeoutId = 0; // IDリセット
@@ -134,97 +133,117 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	}
 
 	/**
-	 * ボタン表示エリア幅の取得
-	 * @returns ボタン表示エリア幅(px)
+	 * ボタン表示エリアサイズの取得
+	 * @returns ボタン表示エリアサイズ
 	 */
-	const getButtonAreaWidth = (): number => {
-		const numberButtonAreaElement = document.getElementById('button-area');
-		// 存在チェック
-		if (!numberButtonAreaElement) {
-			console.error('Failed access element id. "button-area" is null.');
-			return 0;
+	const getButtonAreaSize = (): ButtonAreaSize => {
+		const newButtonAreaSize: ButtonAreaSize = defaultButtonAreaSize; // 新しいボタンエリアサイズ
+		try {
+			const windowHeight = window.innerHeight; // 画面の高さを取得
+			const headerHeight = (document.getElementById('app-header') as HTMLElement).clientHeight; // ヘッダーの高さを取得
+			const resetButtonHeight = (document.getElementById('reset-button') as HTMLElement).clientHeight; // リセットボタンの高さを取得
+			const buttonAreaHeight = windowHeight - headerHeight - resetButtonHeight; // ボタン表示エリアの高さを算出
+			const buttonAreaElement = document.getElementById('button-area') as HTMLElement; // ボタン表示エリアの要素を取得
+			const buttonAreaWidth = Number(window.getComputedStyle(buttonAreaElement).width.replace('px', '')); // ボタン表示エリア幅を取得
+			// ボタンエリアサイズの最大値を取得
+			const maxButtonAreaSize = getMaxButtonAreaSize();
+			// ボタン表示エリアサイズを更新（サイズの最大値より大きい場合は最大値を設定する）
+			newButtonAreaSize.width = (buttonAreaWidth < maxButtonAreaSize.width) ? buttonAreaWidth : maxButtonAreaSize.width;
+			newButtonAreaSize.height = (buttonAreaHeight < maxButtonAreaSize.height) ? buttonAreaHeight : maxButtonAreaSize.height;
 		}
-		
-		// ボタン表示エリア幅を取得
-		const buttonAreaWidth = Number(window.getComputedStyle(numberButtonAreaElement).width.replace('px', ''));
-		return buttonAreaWidth;
+		catch (e) {
+			console.error(e); // エラーログ出力
+			alert('画面サイズがうまく読み込めませんでした。\nブラウザをリサイズ、もしくは更新してください。');
+		}
+		console.log('設定値', newButtonAreaSize);
+		return newButtonAreaSize;
 	}
 
 	/**
-	 * ボタンエリアの高さを取得
-	 * @param buttonSize - 設定されているボタンサイズ(px)
-	 * @returns ボタンエリアの高さ(px)
+	 * 最大のボタンエリアサイズを取得
+	 * @returns - 最大のボタンエリアサイズ
 	 */
-	const getButtonAreaHeight = (buttonSize: number): number => {
-		// ボタンエリア高さを更新
-		const newButtonAreaHeight = 3 * buttonSize
-																+ Math.floor(buttonSize * numberButtonMarginPerHeight)
-																+ Math.floor(buttonSize * calcButtonMarginPerHeight);
-		return newButtonAreaHeight;
+	const getMaxButtonAreaSize = (): ButtonAreaSize => {
+		const maxButtonAreaSize = defaultButtonAreaSize;
+		try {
+			// app-core要素のpaddingの値を取得(px)
+			const appCorePadding = Number(window.getComputedStyle(document.getElementById('app-core') as HTMLElement).paddingRight.replace('px', ''));
+			// ボタンエリアのmarginの値を取得(px)
+			const buttonAreaMargin = Number(window.getComputedStyle(document.getElementById('button-area') as HTMLElement).marginRight.replace('px', ''));
+			// ボタンエリアの最大幅
+			const maxButtonAreaWidth = maxAppContainerWidth - appCorePadding - buttonAreaMargin;
+			// ボタンエリアが最大幅である場合のボタンサイズを算出
+			// ボタン幅 = ボタンエリア幅 / (横一列のボタン数 + ボタン間の余白数 * ボタン間の余白割合)
+			const buttonSizeInMaxButtonAreaWidth = Math.floor(maxButtonAreaWidth / (4 + 3 * buttonMarginPerWidth));
+			// ボタンエリアが最大幅である場合の最大高さの算出
+			// ボタンエリア高さ = ボタン高さ * (縦一列のボタン数 + 選択したボタンの表示高さ割合 + 数字ボタン下の余白の割合 + 演算子ボタン下の余白の割合)
+			const maxButtonAreaHeight = Math.floor(buttonSizeInMaxButtonAreaWidth * (2 + selectedButtonAreaPerHeight + numberButtonBottomMarginPerHeight + calcButtonBottomMarginPerHeight));
+			// 算出した最大値を格納
+			maxButtonAreaSize.width = maxButtonAreaWidth;
+			maxButtonAreaSize.height = maxButtonAreaHeight;
+		}
+		catch (e) {
+			console.error(e); // エラーログ出力
+			alert('画面サイズがうまく読み込めませんでした。\nブラウザをリサイズ、もしくは更新してください。');
+		}
+		// TODO: 動作確認のため追加
+		console.log('最大値:', maxButtonAreaSize);
+		return maxButtonAreaSize;
+	}
+
+	/**
+	 * 新しいボタンサイズを加味したボタンエリア高さを取得
+	 * @param {number} newButtonSize - 新しいボタンサイズ
+	 * @param {number} buttonAreaHeight - 現在のボタンエリア高さ
+	 * @returns - ボタンサイズを加味したボタンエリア高さ
+	 */
+	const getButtonAreaHeightRefButtonSize = (newButtonSize: number, buttonAreaHeight: number): number => {
+		// ボタンサイズからボタンエリア高さを算出
+		// ボタンエリア高さ = 選択したボタンエリア高さ + 数字と演算子ボタンの高さ + 数字ボタン下余白 + 演算子ボタンした余白
+		const newButtonAreaHeight = newButtonSize * (selectedButtonAreaPerHeight + 2 + numberButtonBottomMarginPerHeight + calcButtonBottomMarginPerHeight);
+		// 算出値と現在値とで高さが小さい方を返す
+		return (newButtonAreaHeight < buttonAreaHeight) ? newButtonAreaHeight : buttonAreaHeight;
 	}
 
 	/**
 	 * ボタンサイズを設定
-	 * @param {number} buttonAreaWidth - ボタンエリアの幅(px)
+	 * @param {ButtonAreaSize} newButtonAreaSize - 新しいボタンエリアサイズ
 	 * @returns - 設定したボタンのサイズ(px)
 	 */
-	const setButtonSizeStyle = (buttonAreaWidth: number): number => {
-		// ボタンサイズを算出
-		const buttonSize = Math.floor(buttonAreaWidth / (4 + 3 * buttonMarginPerWidth));
+	const setButtonSizeStyle = (newButtonAreaSize: ButtonAreaSize): number => {
+		// ボタンエリアの幅をもとにボタンサイズを算出
+		// ボタン幅 = ボタンエリア幅 / (横一列のボタン数 + ボタン間の余白数 * ボタン間の余白割合)
+		const buttonSizeForWidth = Math.floor(newButtonAreaSize.width / (4 + 3 * buttonMarginPerWidth));
+		// ボタンエリアの高さをもとにボタンサイズを算出
+		// ボタン高さ = ボタンエリア高さ / (縦一列のボタン数 + 選択したボタンの表示高さ割合 + 数字ボタン下の余白の割合 + 演算子ボタン下の余白の割合)
+		const buttonSizeForHeight = Math.floor(newButtonAreaSize.height / (2 + selectedButtonAreaPerHeight + numberButtonBottomMarginPerHeight + calcButtonBottomMarginPerHeight));
+		// 小さい方を新しいボタンサイズを選定
+		const newButtonSize = (buttonSizeForWidth < buttonSizeForHeight) ? buttonSizeForWidth : buttonSizeForHeight;
 
-		// 数字と演算子ボタンサイズを更新
-		setNumberCalcButtonStyles((prevNumberCalcButtonStyles) => ({
-			...prevNumberCalcButtonStyles,
-			[ButtonType.FirstNumber]: {
-				...prevNumberCalcButtonStyles[ButtonType.FirstNumber],
-				width: buttonSize + 'px',
-				height: buttonSize + 'px',
-				lineHeight: buttonSize + 'px',
-			},
-			[ButtonType.SecondNumber]: {
-				...prevNumberCalcButtonStyles[ButtonType.SecondNumber],
-				width: buttonSize + 'px',
-				height: buttonSize + 'px',
-				lineHeight: buttonSize + 'px',
-			},
-			[ButtonType.ThirdNumber]: {
-				...prevNumberCalcButtonStyles[ButtonType.ThirdNumber],
-				width: buttonSize + 'px',
-				height: buttonSize + 'px',
-				lineHeight: buttonSize + 'px',
-			},
-			[ButtonType.FourthNumber]: {
-				...prevNumberCalcButtonStyles[ButtonType.FourthNumber],
-				width: buttonSize + 'px',
-				height: buttonSize + 'px',
-				lineHeight: buttonSize + 'px',
-			},
-			[ButtonType.Plus]: {
-				...prevNumberCalcButtonStyles[ButtonType.Plus],
-				width: buttonSize + 'px',
-				height: buttonSize + 'px',
-				lineHeight: buttonSize + 'px',
-			},
-			[ButtonType.Minus]: {
-				...prevNumberCalcButtonStyles[ButtonType.Minus],
-				width: buttonSize + 'px',
-				height: buttonSize + 'px',
-				lineHeight: buttonSize + 'px',
-			},
-			[ButtonType.Multiply]: {
-				...prevNumberCalcButtonStyles[ButtonType.Multiply],
-				width: buttonSize + 'px',
-				height: buttonSize + 'px',
-				lineHeight: buttonSize + 'px',
-			},
-			[ButtonType.Division]: {
-				...prevNumberCalcButtonStyles[ButtonType.Division],
-				width: buttonSize + 'px',
-				height: buttonSize + 'px',
-				lineHeight: buttonSize + 'px',
-			},
-		}));
-		return buttonSize;
+		// サイズを変更するボタン配列を生成
+		const changeSizeButtons: ButtonType[] = [
+			ButtonType.FirstNumber,
+			ButtonType.SecondNumber,
+			ButtonType.ThirdNumber,
+			ButtonType.FourthNumber,
+			ButtonType.Plus,
+			ButtonType.Minus,
+			ButtonType.Multiply,
+			ButtonType.Division
+		];
+		changeSizeButtons.forEach((changeSizeButton) => {
+			// ボタンサイズを更新
+			setNumberCalcButtonStyles((prevNumberCalcButtonStyles) => ({
+				...prevNumberCalcButtonStyles,
+				[changeSizeButton]: {
+					...prevNumberCalcButtonStyles[changeSizeButton],
+					width: newButtonSize + 'px',
+					height: newButtonSize + 'px',
+					lineHeight: newButtonSize + 'px',
+				}
+			}));
+		});
+		return newButtonSize;
 	};
 
 	/**
@@ -259,43 +278,50 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	 * @param {ButtonAreaSize} buttonAreaSize - ボタンエリアのサイズ(px)
 	 */
 	const initButtonLayout = (initButton: ButtonType, buttonSize: number, buttonAreaSize: ButtonAreaSize): void => {
-		const buttonMargin = Math.floor((buttonAreaSize.width - 4 * buttonSize) / 3); // ボタンマージン(px)
+		// ボタン間の余白を算出
+		const buttonMargin = buttonSize * buttonMarginPerWidth;
+		// ボタンの左右の余白を算出(px)
+		// 左右の余白 = (ボタンエリア幅 - ボタン幅の合計 - ボタン間の余白の合計) / 2 
+		const buttonSideMargin = Math.floor((buttonAreaSize.width - 4 * buttonSize - 3 * buttonMargin) / 2);
+		// ボタンに設定する上からの表示位置
+		// 演算子ボタン：上からの表示位置 = 数字ボタンより１ボタン分下のの表示位置 - 数字ボタンと演算子ボタンの余白
+		// 数字ボタン：上からの表示位置 = 選択されたボタン表示エリア高さ
 		const styleTop: string = judgeCalcButton(initButton) 
-														? ((buttonAreaSize.height - buttonSize) + 'px')
-														: ((buttonSize + buttonSize * numberButtonMarginPerHeight) + 'px'); // ボタンに設定する上からの表示位置
+														? (buttonSize * (selectedButtonAreaPerHeight + 1) + buttonSize * numberButtonBottomMarginPerHeight) + 'px'
+														: (buttonSize * selectedButtonAreaPerHeight) + 'px';
 		let styleLeft: string = ''; // ボタンに設定する左からの表示位置
 
 		// 左から１つ目の数字ボタンの場合
 		if (initButton === ButtonType.FirstNumber) {
-			styleLeft = '0px';
+			styleLeft = buttonSideMargin + 'px';
 		}
 		// 左から２つ目の数字ボタンの場合
 		else if (initButton === ButtonType.SecondNumber) {
-			styleLeft = (buttonSize + buttonMargin) + 'px';
+			styleLeft = (buttonSideMargin + buttonSize + buttonMargin) + 'px';
 		}
 		// 左から３つ目の数字ボタンの場合
 		else if (initButton === ButtonType.ThirdNumber) {
-			styleLeft = (2 * (buttonSize + buttonMargin)) + 'px';
+			styleLeft = (buttonSideMargin + 2 * (buttonSize + buttonMargin)) + 'px';
 		}
 		// 左から４つ目の数字ボタンの場合
 		else if (initButton === ButtonType.FourthNumber) {
-			styleLeft = (3 * (buttonSize + buttonMargin)) + 'px';
+			styleLeft = (buttonSideMargin + 3 * (buttonSize + buttonMargin)) + 'px';
 		}
 		// 「+」ボタンの場合
 		else if (initButton === ButtonType.Plus) {
-			styleLeft = '0px';
+			styleLeft = buttonSideMargin + 'px';
 		}
 		// 「-」ボタンの場合
 		else if (initButton === ButtonType.Minus) {
-			styleLeft = (buttonSize + buttonMargin) + 'px';
+			styleLeft = (buttonSideMargin + buttonSize + buttonMargin) + 'px';
 		}
 		// 「×」ボタンの場合
 		else if (initButton === ButtonType.Multiply) {
-			styleLeft = (2 * (buttonSize + buttonMargin)) + 'px';
+			styleLeft = (buttonSideMargin + 2 * (buttonSize + buttonMargin)) + 'px';
 		}
 		// 「÷」ボタンの場合
 		else if (initButton === ButtonType.Division) {
-			styleLeft = (3 * (buttonSize + buttonMargin)) + 'px';
+			styleLeft = (buttonSideMargin + 3 * (buttonSize + buttonMargin)) + 'px';
 		}
 		// 数字と演算子ボタンの表示位置を初期位置に更新
 		setNumberCalcButtonStyles((prevNumberCalcButtonStyles) => ({
@@ -322,7 +348,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		const newSelectedButtons = updateSelectedButtons(selectedButton); // 選択されているボタン配列の更新
 		const diffSelectedButtons = oldSelectedButtons.filter(buttonType => newSelectedButtons.indexOf(buttonType) === -1); // 非選択となったボタン配列
 
-		const buttonMargin = Math.floor((buttonAreaSize.width - 4 * buttonSize) / 3); // ボタンマージン(px)
+		const buttonMargin = Math.floor(buttonSize * buttonMarginPerWidth); // ボタン間マージン(px)
 
 		// 選択されているボタンが１つの場合
 		if (newSelectedButtons.length === 1) {
@@ -331,7 +357,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 				...prevNumberCalcButtonStyles,
 				[newSelectedButtons[0]]: {
 					...prevNumberCalcButtonStyles[newSelectedButtons[0]],
-					top: '0px',
+					top: buttonSize + 'px',
 					left: ((buttonAreaSize.width - buttonSize) / 2) + 'px',
 				},
 			}));
@@ -343,13 +369,13 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 				...prevNumberCalcButtonStyles,
 				[newSelectedButtons[0]]: {
 					...prevNumberCalcButtonStyles[newSelectedButtons[0]],
-					top: '0px',
-					left: (buttonSize + buttonMargin) + 'px',
+					top: buttonSize + 'px',
+					left: (buttonAreaSize.width / 2 - buttonSize - buttonMargin / 2) + 'px',
 				},
 				[newSelectedButtons[1]]: {
 					...prevNumberCalcButtonStyles[newSelectedButtons[1]],
-					top: '0px',
-					left: (2 * (buttonSize + buttonMargin)) + 'px',
+					top: buttonSize + 'px',
+					left: (buttonAreaSize.width / 2 + buttonMargin / 2) + 'px',
 				},
 			}));
 		}
@@ -360,17 +386,17 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 				...prevNumberCalcButtonStyles,
 				[newSelectedButtons[0]]: {
 					...prevNumberCalcButtonStyles[newSelectedButtons[0]],
-					top: '0px',
+					top: buttonSize + 'px',
 					left: (((buttonAreaSize.width - buttonSize) / 2) - (buttonSize + buttonMargin)) + 'px',
 				},
 				[newSelectedButtons[1]]: {
 					...prevNumberCalcButtonStyles[newSelectedButtons[1]],
-					top: '0px',
+					top: buttonSize + 'px',
 					left: ((buttonAreaSize.width - buttonSize) / 2) + 'px',
 				},
 				[newSelectedButtons[2]]: {
 					...prevNumberCalcButtonStyles[newSelectedButtons[2]],
-					top: '0px',
+					top: buttonSize + 'px',
 					left: (((buttonAreaSize.width - buttonSize) / 2) + (buttonSize + buttonMargin)) + 'px',
 				},
 			}));
