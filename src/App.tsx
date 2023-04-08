@@ -26,10 +26,10 @@ function App() {
    */
     const createProblem = (): void => {
       const newProblemNumbers = [...problemNumbers]; // 配列の値渡し
-      newProblemNumbers[ButtonType.FirstNumber] = Math.floor(Math.random() * 8); // TODO: 0~9までの乱数生成
-      newProblemNumbers[ButtonType.SecondNumber] = Math.floor(Math.random() * 8); // TODO: 0~9までの乱数生成
-      newProblemNumbers[ButtonType.ThirdNumber] = Math.floor(Math.random() * 8); // TODO: 0~9までの乱数生成
-      newProblemNumbers[ButtonType.FourthNumber] = Math.floor(Math.random() * 8); // TODO: 0~9までの乱数生成
+      newProblemNumbers[0] = Math.floor(Math.random() * 8); // TODO: 0~9までの乱数生成
+      newProblemNumbers[1] = Math.floor(Math.random() * 8); // TODO: 0~9までの乱数生成
+      newProblemNumbers[2] = Math.floor(Math.random() * 8); // TODO: 0~9までの乱数生成
+      newProblemNumbers[3] = Math.floor(Math.random() * 8); // TODO: 0~9までの乱数生成
   
       // 問題の更新
       setProblemNumbers(newProblemNumbers);
@@ -98,7 +98,7 @@ function App() {
 
   return (
     <div id="app">
-      <div id="app-container">
+      <div id="app-container" className="app-container-center">
         <div id="app-core">
           <Header />
           <MakeTen problemNumbers={problemNumbers} />

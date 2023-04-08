@@ -6,35 +6,35 @@ export enum ButtonType {
   /**
    * 左から1つ目の数字ボタン
    */
-  FirstNumber = 0,
+  FirstNumber = 'first',
   /**
    * 左から2つ目の数字ボタン
    */
-  SecondNumber = 1,
+  SecondNumber = 'second',
   /**
    * 左から3つ目の数字ボタン
    */
-  ThirdNumber = 2,
+  ThirdNumber = 'third',
   /**
    * 左から4つ目の数字ボタン
    */
-  FourthNumber = 3,
+  FourthNumber = 'fourth',
   /**
    * 「＋」ボタン
    */
-  Plus = 4,
+  Plus = 'plus',
   /**
    * 「ー」ボタン
    */
-  Minus = 5,
+  Minus = 'minus',
   /**
    * 「×」ボタン
    */
-  Multiply = 6,
+  Multiply = 'multiply',
   /**
    * 「÷」ボタン
    */
-  Division = 7,
+  Division = 'division',
 }
 
 /**
@@ -55,29 +55,33 @@ export interface ButtonStyle {
 }
 
 /**
- * 数字ボタンの動的に設定するスタイル配列
+ * 数字と演算子ボタンの動的に設定するスタイル配列
  * @property {ButtonStyle} first - 1つ目の数字ボタンに設定するスタイル
  * @property {ButtonStyle} second - 2つ目の数字ボタンに設定するスタイル
  * @property {ButtonStyle} third - 3つ目の数字ボタンに設定するスタイル
  * @property {ButtonStyle} fourth - 4つ目の数字ボタンに設定するスタイル
- */
-export interface NumberButtonStyles {
-  first: ButtonStyle,
-  second: ButtonStyle,
-  third: ButtonStyle,
-  fourth: ButtonStyle,
-}
-
-/**
- * 演算ボタンの動的に設定するスタイル配列
  * @property {ButtonStyle} plus - 「＋」ボタンに設定するスタイル
  * @property {ButtonStyle} minus - 「ー」ボタンに設定するスタイル
  * @property {ButtonStyle} multiply - 「×」ボタンに設定するスタイル
  * @property {ButtonStyle} division - 「÷」ボタンに設定するスタイル
  */
-export interface CalcButtonStyles {
-  plus: ButtonStyle,
-  minus: ButtonStyle,
-  multiply: ButtonStyle,
-  division: ButtonStyle,
+export interface NumberCalcButtonStyles {
+  [ButtonType.FirstNumber]: ButtonStyle,
+  [ButtonType.SecondNumber]: ButtonStyle,
+  [ButtonType.ThirdNumber]: ButtonStyle,
+  [ButtonType.FourthNumber]: ButtonStyle,
+  [ButtonType.Plus]: ButtonStyle,
+  [ButtonType.Minus]: ButtonStyle,
+  [ButtonType.Multiply]: ButtonStyle,
+  [ButtonType.Division]: ButtonStyle,
+}
+
+/**
+ * ボタンエリアサイズ
+ * @property {number} width - ボタンエリアの幅(px)
+ * @property {number} height - ボタンエリアの高さ(px)
+ */
+export interface ButtonAreaSize {
+  width: number;
+  height: number;
 }

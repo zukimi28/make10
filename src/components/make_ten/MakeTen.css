@@ -5,22 +5,41 @@
 
 .number-button {
   background-color: #93c7c9;
+}
+
+.round-button {
   text-align: center;
   border-radius: 50%;
   position: absolute;
-  transition: all 1s 0s ease;
   cursor: pointer;
 }
 
-.number-button-animation {
+.plus-button {
+  background-color: #d7ffd4;
+}
+
+.minus-button {
+  background-color: #fffde8;
+}
+
+.multiply-button {
+  background-color: #fcdede;
+}
+
+.division-button {
+  background-color: #f6e2ff;
+}
+
+.button-animation {
   transition: all 0.3s 0s ease;
 }
 
-.calc-button {
+#reset-button {
   background-color: #ffffff;
+  width: 70%;
+  padding: 16px;
   text-align: center;
-  border-radius: 50%;
-  position: absolute;
-  transition: all 1s 0s ease;
+  margin: auto;
+  border-radius: 7px;
   cursor: pointer;
 }
