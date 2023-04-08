@@ -29,6 +29,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	const calcButtonMarginPerHeight: number = 1/2; // 演算ボタン高さに対する数字ボタンと演算ボタン間マージンの割当
 	const resizeEventInterval: number = 50; // リサイズイベントの発生インターバル(ms)
 	const buttonAnimationStopInterval: number = 200; // ボタンのアニメーション一時停止時間(ms)
+	const selectedButtonsCalcWaitTime: number = 500; // 選択したボタンの計算開始までの待機時間
 	let resizeEventSetTimeoutId: number = 0; // リサイズイベント時のsetTimeoutID
 	let buttonAnimationSetTimeoutId: number = 0; // ボタンアニメーションの一時解除setTimeoutID
 
@@ -109,7 +110,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 				setSelectedButtons([]); // 配列を初期化
 				// ボタンを初期位置に戻す
 				initAllButtonLayout(buttonSize, buttonAreaSize); // ボタンの初期位置設定
-			}, 1000);
+			}, selectedButtonsCalcWaitTime);
 		}
 	}, [selectedButtons]);
 
