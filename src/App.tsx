@@ -14,7 +14,7 @@ function App() {
 	const [problemNumbers, setProblemNumbers] = useState<number[]>([0, 0, 0, 0]);
 
   // 遊び方ダイアログの表示フラグ
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenHowToDialog, setIsOpenHowToDialog] = useState(false);
 
   // 遊び方ダイアログの初期表示フラグ
   const [isInitDisplay, setIsInitDisplay] = useState(true);
@@ -77,7 +77,7 @@ function App() {
    */
   const changeHowToPlayDialog = (isOpen: boolean): void => {
     console.log(isOpen? '遊び方ダイアログ表示' : '遊び方ダイアログ非表示');
-    setIsOpen(isOpen); // 表示非表示を切り替える
+    setIsOpenHowToDialog(isOpen); // 表示非表示を切り替える
   }
 
   return (
@@ -85,7 +85,7 @@ function App() {
       <div id="app-container">
         <div id="app-core">
           <HowToPlayDialog
-            isOpen={isOpen}
+            isOpen={isOpenHowToDialog}
             isInitDisplay={isInitDisplay}
             closeHowToPlayDialog={() => changeHowToPlayDialog(false)} />
           <Header
