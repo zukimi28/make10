@@ -1,4 +1,3 @@
-import { height } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 import { ButtonStyle, NumberCalcButtonStyles, ButtonType, ButtonAreaSize } from '../../core/types';
 import './MakeTen.css';
