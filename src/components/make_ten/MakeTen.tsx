@@ -15,12 +15,20 @@ type Props = {
  * @returns MakeTenコンポーネント
  */
 const MakeTen = ({problemNumbers}: Props): JSX.Element => {
+	// 丸いボタンの色
+	const buttonColor = {
+		number: '#93c7c9',
+		plus: '#d7ffd4',
+		minus: '#fffde8',
+		multiply: '#fcdede',
+		division: '#f6e2ff',
+	};
 	// 数字ボタンと演算ボタンの表示エリアサイズのデフォルト値
 	const defaultButtonAreaSize: ButtonAreaSize = {
 		width: 300,
 		height: 600,
 	};
-	const defaultButtonSize = 30; // 数字ボタンと演算ボタンのサイズのデフォルト値(px)
+	const defaultButtonSize: number = 30; // 数字ボタンと演算ボタンのサイズのデフォルト値(px)
 	// 数字ボタンと演算ボタンに動的に設定するスタイルのデフォルト値
 	const defaultButtonStyle: ButtonStyle = {
 		width: defaultButtonSize + 'px',
@@ -28,6 +36,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		lineHeight: defaultButtonSize + 'px',
 		top: '0px',
 		left: '0px',
+		backgroundColor: buttonColor.number,
 	}
 	const buttonMarginPerWidth: number = 1/4; // ボタン幅に対するボタン間マージンの割合
 	const selectedButtonAreaPerHeight: number = 3; // 数字ボタン高さに対する選択したボタン表示エリアの高さの割合
@@ -133,7 +142,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 
 	/**
 	 * ボタン表示エリアサイズの取得
-	 * @returns ボタン表示エリアサイズ
+	 * @returns {ButtonAreaSize} ボタン表示エリアサイズ
 	 */
 	const getButtonAreaSize = (): ButtonAreaSize => {
 		const newButtonAreaSize: ButtonAreaSize = defaultButtonAreaSize; // 新しいボタンエリアサイズ
@@ -154,13 +163,12 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			console.error(e); // エラーログ出力
 			alert('画面サイズがうまく読み込めませんでした。\nブラウザをリサイズ、もしくは更新してください。');
 		}
-		console.log('設定値', newButtonAreaSize);
 		return newButtonAreaSize;
 	}
 
 	/**
 	 * 最大のボタンエリアサイズを取得
-	 * @returns - 最大のボタンエリアサイズ
+	 * @returns {ButtonAreaSize} 最大のボタンエリアサイズ
 	 */
 	const getMaxButtonAreaSize = (): ButtonAreaSize => {
 		const maxButtonAreaSize = defaultButtonAreaSize;
@@ -185,8 +193,6 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			console.error(e); // エラーログ出力
 			alert('画面サイズがうまく読み込めませんでした。\nブラウザをリサイズ、もしくは更新してください。');
 		}
-		// TODO: 動作確認のため追加
-		console.log('最大値:', maxButtonAreaSize);
 		return maxButtonAreaSize;
 	}
 
@@ -194,7 +200,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	 * 新しいボタンサイズを加味したボタンエリア高さを取得
 	 * @param {number} newButtonSize - 新しいボタンサイズ
 	 * @param {number} buttonAreaHeight - 現在のボタンエリア高さ
-	 * @returns - ボタンサイズを加味したボタンエリア高さ
+	 * @returns {number} ボタンサイズを加味したボタンエリア高さ
 	 */
 	const getButtonAreaHeightRefButtonSize = (newButtonSize: number, buttonAreaHeight: number): number => {
 		// ボタンサイズからボタンエリア高さを算出
@@ -207,7 +213,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	/**
 	 * ボタンサイズを設定
 	 * @param {ButtonAreaSize} newButtonAreaSize - 新しいボタンエリアサイズ
-	 * @returns - 設定したボタンのサイズ(px)
+	 * @returns {number} 設定したボタンのサイズ(px)
 	 */
 	const setButtonSizeStyle = (newButtonAreaSize: ButtonAreaSize): number => {
 		// ボタンエリアの幅をもとにボタンサイズを算出
@@ -239,6 +245,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 					width: newButtonSize + 'px',
 					height: newButtonSize + 'px',
 					lineHeight: newButtonSize + 'px',
+					backgroundColor: getButtonColor(changeSizeButton),
 				}
 			}));
 		});
@@ -419,7 +426,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	/**
 	 * 選択されているボタン配列の更新
 	 * @param {ButtonType} selectedButton - 新たに選択されたボタン
-	 * @returns - 更新した選択されているボタン配列
+	 * @returns {ButtonType[]} 更新した選択されているボタン配列
 	 */
 	const updateSelectedButtons = (selectedButton: ButtonType): ButtonType[] => {
 		// 選択されているボタン配列をコピー
@@ -477,7 +484,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	 * ２つのボタンの種別（数字、演算子）が一致するか判定
 	 * @param {ButtonType} firstButton - １つ目のボタン
 	 * @param {ButtonType} secondButton - ２つ目のボタン
-	 * @returns - 種別が一致するか否か
+	 * @returns {boolean} 種別が一致するか否か
 	 */
 	const judgeSameCategoryButton = (firstButton: ButtonType, secondButton: ButtonType): boolean => {
 		const isFirstButtonCalc = judgeCalcButton(firstButton); // １つ目のボタンが演算子ボタンか判定
@@ -488,7 +495,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	/**
 	 * 演算子ボタンか判定
 	 * @param {ButtonType} button - 判定するボタン
-	 * @returns - 演算子ボタンか否か
+	 * @returns {boolean} 演算子ボタンか否か
 	 */
 	const judgeCalcButton = (button: ButtonType): boolean => {
 		return (button === ButtonType.Plus
@@ -497,46 +504,70 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			|| button === ButtonType.Division);
 	}
 
+	/**
+	 * 数字ボタンと演算子ボタンの色を取得
+	 * @property {ButtonType} button - 色を取得したいボタン
+	 * @returns {string} ボタンの色
+	 */
+	const getButtonColor = (button: ButtonType): string => {
+		// 演算子ボタンの場合
+		if (judgeCalcButton(button)) {
+			if (button === ButtonType.Plus) {
+				return buttonColor.plus;
+			}
+			else if (button === ButtonType.Minus) {
+				return buttonColor.minus;
+			}
+			else if (button === ButtonType.Multiply) {
+				return buttonColor.multiply;
+			}
+			else if (button === ButtonType.Division) {
+				return buttonColor.division;
+			}
+		}
+		return buttonColor.number;
+	}
+
 	return (
 		<>
 			<div id="button-area" style={{height: buttonAreaSize.height + 'px'}}>
 				<div
-					className={`${"number-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					className={`${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
 					style={numberCalcButtonStyles[ButtonType.FirstNumber]}
 					onClick={() => handleClickButton(ButtonType.FirstNumber)}
 				>{problemNumbers[0]}</div>
 				<div
-					className={`${"number-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					className={`${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
 					style={numberCalcButtonStyles[ButtonType.SecondNumber]}
 					onClick={() => handleClickButton(ButtonType.SecondNumber)}
 				>{problemNumbers[1]}</div>
 				<div
-					className={`${"number-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					className={`${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
 					style={numberCalcButtonStyles[ButtonType.ThirdNumber]}
 					onClick={() => handleClickButton(ButtonType.ThirdNumber)}
 				>{problemNumbers[2]}</div>
 				<div
-					className={`${"number-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					className={`${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
 					style={numberCalcButtonStyles[ButtonType.FourthNumber]}
 					onClick={() => handleClickButton(ButtonType.FourthNumber)}
 				>{problemNumbers[3]}</div>
 				<div
-					className={`${"plus-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					className={`${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
 					style={numberCalcButtonStyles[ButtonType.Plus]}
 					onClick={() => handleClickButton(ButtonType.Plus)}
 				>+</div>
 				<div
-					className={`${"minus-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					className={`${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
 					style={numberCalcButtonStyles[ButtonType.Minus]}
 					onClick={() => handleClickButton(ButtonType.Minus)}
 				>-</div>
 				<div
-					className={`${"multiply-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					className={`${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
 					style={numberCalcButtonStyles[ButtonType.Multiply]}
 					onClick={() => handleClickButton(ButtonType.Multiply)}
 				>×</div>
 				<div
-					className={`${"division-button"} ${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
+					className={`${"round-button"} ${isButtonAnimation ? "button-animation" : ""}`}
 					style={numberCalcButtonStyles[ButtonType.Division]}
 					onClick={() => handleClickButton(ButtonType.Division)}
 				>÷</div>

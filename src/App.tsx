@@ -3,7 +3,7 @@ import './App.css';
 import Header from './components/header/Header';
 import HowToPlayDialog from './components/how_to_play_dialog/HowToPlayDialog';
 import MakeTen from './components/make_ten/MakeTen';
-import { ButtonType, StorageData } from './core/types';
+import { StorageData } from './core/types';
 
 /**
  * アプリケーションコンポーネント
@@ -39,6 +39,7 @@ function App() {
 
   /**
    * 現在日付の取得(YYYYMMDD)
+   * @returns {string} 現在の日付(YYYYMMDD)
    */
   const getNowDate = (): string => {
     const dateObj = new Date();

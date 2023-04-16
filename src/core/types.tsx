@@ -9,65 +9,42 @@ export enum StorageData {
 }
 
 /**
- * 数字ボタン
+ * ボタン種類
  */
-export const NumberButton = {
+export enum ButtonType {
   /**
    * 左から1つ目の数字ボタン
    */
-  FirstNumber: 'first',
+  FirstNumber = 'first',
   /**
    * 左から2つ目の数字ボタン
    */
-  SecondNumber: 'second',
+  SecondNumber = 'second',
   /**
    * 左から3つ目の数字ボタン
    */
-  ThirdNumber: 'third',
+  ThirdNumber = 'third',
   /**
    * 左から4つ目の数字ボタン
    */
-  FourthNumber: 'fourth',
-} as const;
-export type NumberButton = typeof NumberButton[keyof typeof NumberButton];
-
-/**
- * 演算子ボタン
- */
-export const CalcButton = {
+  FourthNumber = 'fourth',
   /**
    * 「＋」ボタン
    */
-  Plus: 'plus',
+  Plus = 'plus',
   /**
    * 「ー」ボタン
    */
-  Minus: 'minus',
+  Minus = 'minus',
   /**
    * 「×」ボタン
    */
-  Multiply: 'multiply',
+  Multiply = 'multiply',
   /**
    * 「÷」ボタン
    */
-  Division: 'division',
-} as const;
-export type CalcButton = typeof CalcButton[keyof typeof CalcButton];
-
-/**
- * ボタン種類
- */
-export const ButtonType = {
-  /**
-   * 数字ボタン
-   */
-  ...NumberButton,
-  /**
-   * 演算子ボタン
-   */
-  ...CalcButton,
-} as const;
-export type ButtonType = typeof ButtonType[keyof typeof ButtonType];
+  Division = 'division',
+}
 
 /**
  * 数字ボタンと演算ボタンに動的に設定するスタイル
@@ -77,6 +54,7 @@ export type ButtonType = typeof ButtonType[keyof typeof ButtonType];
  * @property {string} lineHeight - 文字表示高さ
  * @property {string} top - 上からの表示位置
  * @property {string} left - 左からの表示位置
+ * @property {string} backgroundColor - 色
  */
 export interface ButtonStyle {
 	width: string,
@@ -84,6 +62,7 @@ export interface ButtonStyle {
 	lineHeight: string,
   top: string,
 	left: string,
+  backgroundColor: string,
 }
 
 /**
