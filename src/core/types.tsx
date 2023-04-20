@@ -68,7 +68,7 @@ export enum ButtonType {
  * @property {string} left - 左からの表示位置
  * @property {string} backgroundColor - 色
  * @property {string} opacity - 透明度
- * @property {PointerEventsInButtonStyle} pointerEvents - クリックイベント
+ * @property {VisibilityInButtonStyle} visibility - 表示非表示
  */
 export interface ButtonStyle {
 	width: string,
@@ -77,7 +77,8 @@ export interface ButtonStyle {
   top: string,
 	left: string,
   backgroundColor: string,
-  display: string,
+  opacity: string,
+  visibility: VisibilityInButtonStyle,
 }
 
 /**
@@ -121,7 +122,7 @@ export interface ButtonAreaSize {
 /**
  * 数字ボタンと演算ボタンの表示非表示切り替え
  */
-export enum DisplayInButtonStyle {
+export enum VisibilityInButtonStyle {
   /**
    * 表示
    */
@@ -129,5 +130,5 @@ export enum DisplayInButtonStyle {
   /**
    * 非表示
    */
-  Invisible = 'none',
+  Hidden = 'hidden',
 }

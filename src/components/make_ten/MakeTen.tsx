@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ButtonStyle, NumberCalcButtonStyles, ButtonType, ButtonAreaSize, DisplayInButtonStyle } from '../../core/types';
+import { ButtonStyle, NumberCalcButtonStyles, ButtonType, ButtonAreaSize, VisibilityInButtonStyle } from '../../core/types';
 import './MakeTen.css';
 
 /**
@@ -51,7 +51,8 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		top: '0px',
 		left: '0px',
 		backgroundColor: buttonColor.number,
-		display: 'unset',
+		opacity: '1',
+		visibility: VisibilityInButtonStyle.Visible,
 	}
 	const buttonMarginPerWidth: number = 1/4; // ボタン幅に対するボタン間マージンの割合
 	const selectedButtonAreaPerHeight: number = 3; // 数字ボタン高さに対する選択したボタン表示エリアの高さの割合
@@ -59,8 +60,8 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	const calcButtonBottomMarginPerHeight: number = 1; // 演算ボタン高さに対する演算ボタン下の余白の高さの割合
 	const resizeEventInterval: number = 50; // リサイズイベントの発生インターバル(ms)
 	const buttonAnimationStopInterval: number = 200; // ボタンのアニメーション一時停止時間(ms)
-	const selectedButtonsCalcWaitTime: number = 500; // 選択したボタンの計算開始までの待機時間(ms)
-	const resultButtonVisibleWaitTime: number = 200; // 算出した数字を表示するまでの待機時間(ms)
+	const selectedButtonsCalcWaitTime: number = 200; // 選択したボタンの計算開始までの待機時間(ms)
+	const resultButtonVisibleWaitTime: number = 100; // 算出した数字を表示するまでの待機時間(ms)
 	const setPositionButtonWaitTime: number = 300; // 選択しているボタンをもとの位置に戻すまでの待機時間(ms)
 	const failedWaitTime: number = 200; // 不正解時に回答を表示しておく時間(ms)
 	const maxAppContainerWidth: number = 500; // 最大アプリケーション幅(px)
@@ -87,6 +88,9 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 
 	// 算出された1つ目の数字ボタンの表示位置
 	const [firstResultNumberPosition, setFirstResultNumberPosition] = useState<ButtonType>(ButtonType.FirstNumber);
+
+	// 算出された2つ目の数字ボタンの表示位置
+	const [secondResultNumberPosition, setSecondResultNumberPosition] = useState<ButtonType>(ButtonType.SecondNumber);
 
 	// 算出された1つ目の数字ボタンの値
 	const [firstResultNumberValue, setFirstResultNumberValue] = useState<string>('');
@@ -147,6 +151,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		// 選択されたボタン配列に要素が3つ以上設定された場合
 		if (selectedButtons.length >= 3) {
 			// 一定時間待機後に選択されたボタンを中央に寄せる
+			// 待機時間: selectedButtonsCalcWaitTime
 			window.setTimeout(() => {
 				selectedButtons.forEach((button) => {
 					setNumberCalcButtonStyles((prevNumberCalcButtonStyles) => ({
@@ -159,13 +164,16 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 				});
 				
 				// 一定時間待機後に算出した数字ボタンを表示する
+				// 待機時間: resultButtonVisibleWaitTime
 				window.setTimeout(() => {
+					let isAnswer = false; // 回答フラグ
+
 					// 計算を実行
 					const resultNumber = calcNumber(selectedButtons[0], selectedButtons[2], selectedButtons[1]);
 
 					// 算出した1つ目と2つ目の数字ボタンが表示されていない場合
-					if (numberCalcButtonStyles.firstResult.display === DisplayInButtonStyle.Invisible
-						&& numberCalcButtonStyles.secondResult.display === DisplayInButtonStyle.Invisible) {
+					if (numberCalcButtonStyles.firstResult.visibility === VisibilityInButtonStyle.Hidden
+						&& numberCalcButtonStyles.secondResult.visibility === VisibilityInButtonStyle.Hidden) {
 						// 算出した1つ目の数字ボタンを表示する
 						changeButtonVisible(ButtonType.FirstResultNumber, true);
 
@@ -173,8 +181,8 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 						setFirstResultNumberValue(resultNumber);
 					}
 					// 算出した1つ目の数字ボタンが表示されていて、算出した2つめの数字ボタンが表示されていない場合
-					else if (numberCalcButtonStyles.firstResult.display === DisplayInButtonStyle.Visible
-						&& numberCalcButtonStyles.secondResult.display === DisplayInButtonStyle.Invisible) {
+					else if (numberCalcButtonStyles.firstResult.visibility === VisibilityInButtonStyle.Visible
+						&& numberCalcButtonStyles.secondResult.visibility === VisibilityInButtonStyle.Hidden) {
 						// 算出した2つ目の数字ボタンを表示する
 						changeButtonVisible(ButtonType.SecondResultNumber, true);
 
@@ -183,44 +191,54 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 					}
 					// 回答時
 					else {
+						// 回答時フラグ更新
+						isAnswer = true;
+
 						// 回答を表示する
 						changeButtonVisible(ButtonType.AnswerNumber, true);
 
 						// 回答の値を設定する
 						setAnswerNumberValue(resultNumber);
 					}
+
+					// 回答時でない場合
+					if (!isAnswer) {
+						// 選択された数字ボタンを非表示にする
+						changeButtonVisible(selectedButtons[0], false);
+						changeButtonVisible(selectedButtons[2], false);
+					}
 					
 					// 一定時間待機後にボタンを所定の位置に移動させる
+					// 待機時間: setPositionButtonWaitTime
 					window.setTimeout(() => {
+						
 						// 算出した1つ目と2つ目の数字ボタンが表示されていない場合
-						if (numberCalcButtonStyles.firstResult.display === DisplayInButtonStyle.Invisible
-							&& numberCalcButtonStyles.secondResult.display === DisplayInButtonStyle.Invisible) {
+						if (numberCalcButtonStyles.firstResult.visibility === VisibilityInButtonStyle.Hidden
+							&& numberCalcButtonStyles.secondResult.visibility === VisibilityInButtonStyle.Hidden) {
 							// 算出した1つ目のボタンの表示位置を設定する
 							initButtonLayout(ButtonType.FirstResultNumber, buttonSize, buttonAreaSize);
 						}
 						// 算出した1つ目の数字ボタンが表示されていて、算出した2つめの数字ボタンが表示されていない場合
-						else if (numberCalcButtonStyles.firstResult.display === DisplayInButtonStyle.Visible
-							&& numberCalcButtonStyles.secondResult.display === DisplayInButtonStyle.Invisible) {
+						else if (numberCalcButtonStyles.firstResult.visibility === VisibilityInButtonStyle.Visible
+							&& numberCalcButtonStyles.secondResult.visibility === VisibilityInButtonStyle.Hidden) {
 							// 算出した2つ目のボタンの表示位置を設定する
 							initButtonLayout(ButtonType.SecondResultNumber, buttonSize, buttonAreaSize);
 						}
 						// 回答時
 						else {
-							// 答え合わせ
-							checkAnswer(resultNumber);
+							// 回答が10でない場合
+							if (resultNumber !== '10') {
+								window.setTimeout(() => {
+									initAllButtonLayout(buttonSize, buttonAreaSize); // ボタンの初期位置設定
+								}, failedWaitTime);
+							}
 						}
 
-						selectedButtons.forEach((button) => {							
-							// 選択されているボタンを初期位置に戻す
-							initButtonLayout(button, buttonSize, buttonAreaSize);
-							
-							// 選択されていた数字ボタンを非表示にする
-							// 演算子ボタンでない場合
-							if (!judgeCalcButton(button)) {
-								// 数字ボタンを非表示にする
-								changeButtonVisible(button, false);
-							}
-						});
+						// 回答時以外の場合(回答時はすべてリセットするため以下実施不要)
+						if (!isAnswer) {
+							// 選択されている演算子ボタンを初期位置に戻す
+							initButtonLayout(selectedButtons[1], buttonSize, buttonAreaSize);
+						}
 	
 						// 配列を初期化
 						setSelectedButtons([]);
@@ -427,7 +445,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		// 算出された数字ボタンの場合
 		else {
 			// 選択されたボタン配列が設定されていて、算出された2つ目の数字ボタンが表示されていない場合
-			if (selectedButtons.length >= 3 && numberCalcButtonStyles.secondResult.display === DisplayInButtonStyle.Invisible) {
+			if (selectedButtons.length >= 3 && numberCalcButtonStyles.secondResult.visibility === VisibilityInButtonStyle.Hidden) {
 				// 非表示になっている数字ボタンを抽出
 				const invisibleNumberButtons: ButtonType[] = [];
 				const numberButtons = [
@@ -439,7 +457,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 				// 算出した数字ボタンを表示可能な数字ボタンの場所を探索
 				numberButtons.forEach((button) => {
 					// 数字ボタンが非表示か選択中の場合
-					if (numberCalcButtonStyles[button].display === DisplayInButtonStyle.Invisible || selectedButtons.includes(button)) {
+					if (numberCalcButtonStyles[button].visibility === VisibilityInButtonStyle.Hidden || selectedButtons.includes(button)) {
 						invisibleNumberButtons.push(button);
 					}
 				});
@@ -458,6 +476,8 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 						// 算出された1つ目の数字ボタンと場所が被っていない場合
 						if (firstResultNumberPosition !== invisibleNumberButtons[i]) {
 							styleLeft = getStyleLeftForNumberButton(invisibleNumberButtons[i], currentButtonSize, buttonSideMargin, buttonMargin);
+							// 算出した2つ目の数字ボタンを表示した場所を保持する
+							setSecondResultNumberPosition(invisibleNumberButtons[i]);
 							break;
 						}
 					}
@@ -524,7 +544,8 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			...prevNumberCalcButtonStyles,
 			[button]: {
 				...prevNumberCalcButtonStyles[button],
-				display: isVisible ? 'unset' : 'none',
+				opacity: isVisible ? '1' : '0',
+				visibility: isVisible ? VisibilityInButtonStyle.Visible : VisibilityInButtonStyle.Hidden,
 			}
 		}));
 	}
@@ -599,7 +620,25 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 
 		// 非選択状態になったボタンを初期位置に戻す
 		diffSelectedButtons.forEach((button) => {
-			initButtonLayout(button, buttonSize, buttonAreaSize); // 特定のボタンを初期位置に戻す
+			// 算出した数字ボタンの場合
+			if (button === ButtonType.FirstResultNumber || button === ButtonType.SecondResultNumber) {
+				// ボタンの左右の余白を算出(px)
+				// 左右の余白 = (ボタンエリア幅 - ボタン幅の合計 - ボタン間の余白の合計) / 2 
+				const buttonSideMargin = Math.floor((buttonAreaSize.width - 4 * buttonSize - 3 * buttonMargin) / 2);
+				const buttonPosition = button === ButtonType.FirstResultNumber ? firstResultNumberPosition : secondResultNumberPosition;
+				// 算出した数字ボタンの表示位置を選択前の位置に更新
+				setNumberCalcButtonStyles((prevNumberCalcButtonStyles) => ({
+					...prevNumberCalcButtonStyles,
+					[button]: {
+						...prevNumberCalcButtonStyles[button],
+						top: (buttonSize * selectedButtonAreaPerHeight) + 'px',
+						left: getStyleLeftForNumberButton(buttonPosition, buttonSize, buttonSideMargin, buttonMargin),
+					}
+				}));
+			}
+			else {
+				initButtonLayout(button, buttonSize, buttonAreaSize); // 特定のボタンを初期位置に戻す
+			}
 		});
 	}
 
@@ -774,18 +813,6 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		}
 		else {
 			throw new Error('Invalid value entered in getButtonNumber(MakeTen.tsx)');
-		}
-	}
-
-	/**
-	 * 答え合わせ
-	 * @param {string} answerNumber - 回答した数字
-	 */
-	const checkAnswer = (answerNumber: string) => {
-		if (answerNumber !== '10') {
-			window.setTimeout(() => {
-				initAllButtonLayout(buttonSize, buttonAreaSize); // ボタンの初期位置設定
-			}, failedWaitTime);
 		}
 	}
 

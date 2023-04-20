@@ -12,7 +12,11 @@
 }
 
 .button-animation {
-  transition: all 0.3s 0s ease;
+  transition:
+    left 0.2s,
+    top 0.2s,
+    opacity 0.2s,
+    visibility 0.2s;
 }
 
 #reset-button {
