@@ -171,6 +171,31 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 					// 計算を実行
 					const resultNumber = calcNumber(selectedButtons[0], selectedButtons[2], selectedButtons[1]);
 
+					// 分母に0がある場合
+					if (resultNumber.includes('/0')) {
+						// 不正な計算が行われたため選択されたボタンをもとの位置に戻す
+						selectedButtons.forEach((button) => {
+							// 選択されたボタンが算出された1つ目の数字ボタンだった場合
+							if (button === ButtonType.FirstResultNumber) {
+								// 選択される前に表示していた場所に移動させる
+								moveResultButtonToSpecificButtonPosition(button, buttonSize, buttonAreaSize, firstResultNumberPosition);
+							}
+							// 選択されたボタンが算出された2つ目の数字ボタンだった場合
+							else if (button === ButtonType.SecondResultNumber) {
+								// 選択される前に表示していた場所に移動させる
+								moveResultButtonToSpecificButtonPosition(button, buttonSize, buttonAreaSize, secondResultNumberPosition);
+							}
+							else {
+								initButtonLayout(button, buttonSize, buttonAreaSize);
+							}
+						});
+
+						// 配列を初期化
+						setSelectedButtons([]);
+
+						return; // 後続処理をスキップする
+					}
+
 					// 算出した1つ目と2つ目の数字ボタンが表示されていない場合
 					if (numberCalcButtonStyles.firstResult.visibility === VisibilityInButtonStyle.Hidden
 						&& numberCalcButtonStyles.secondResult.visibility === VisibilityInButtonStyle.Hidden) {
@@ -503,11 +528,44 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	}
 
 	/**
+	 * 算出された数字ボタンの表示位置を特定の数字ボタンの位置に更新
+	 * @param {ButtonType.FirstResultNumber | ButtonType.SecondResultNumber} resultButton - 位置を更新する算出された数字ボタン
+	 * @param {number} currentButtonSize - 現在のボタンのサイズ(px)
+	 * @param {ButtonAreaSize} currentButtonAreaSize - 現在のボタンエリアのサイズ(px)
+	 * @param {ButtonType} targetButton - 移動先のボタン
+	 */
+	const moveResultButtonToSpecificButtonPosition = (
+		resultButton: ButtonType.FirstResultNumber | ButtonType.SecondResultNumber,
+		currentButtonSize: number,
+		currentButtonAreaSize: ButtonAreaSize,
+		targetButton: ButtonType): void => {
+			// ボタン間の余白を算出
+			const buttonMargin = currentButtonSize * buttonMarginPerWidth;
+			// ボタンの左右の余白を算出(px)
+			// 左右の余白 = (ボタンエリア幅 - ボタン幅の合計 - ボタン間の余白の合計) / 2 
+			const buttonSideMargin = Math.floor((currentButtonAreaSize.width - 4 * currentButtonSize - 3 * buttonMargin) / 2);
+			// ボタンに設定する上からの表示位置
+			// 上からの表示位置 = 選択されたボタン表示エリア高さ
+			const styleTop = (currentButtonSize * selectedButtonAreaPerHeight) + 'px';
+			const targetPosition = resultButton === ButtonType.FirstResultNumber ? firstResultNumberPosition : secondResultNumberPosition;
+			const styleLeft = getStyleLeftForNumberButton(targetPosition, currentButtonSize, buttonSideMargin, buttonMargin); // ボタンに設定する左からの表示位置
+			// 算出された数字ボタンの表示位置を特定の数字ボタンの位置に更新
+			setNumberCalcButtonStyles((prevNumberCalcButtonStyles) => ({
+				...prevNumberCalcButtonStyles,
+				[resultButton]: {
+					...prevNumberCalcButtonStyles[resultButton],
+					top: styleTop,
+					left: styleLeft,
+				}
+			}));
+		}
+
+	/**
 	 * 数字ボタンに設定する左からの表示位置を取得
-	 * @property {ButtonType} button - 取得するボタン
-	 * @property {number} currentButtonSize - ボタンサイズ
-	 * @property {number} buttonSideMargin - 取得するボタン
-	 * @property {number} buttonMargin - 取得するボタン
+	 * @param {ButtonType} button - 取得するボタン
+	 * @param {number} currentButtonSize - ボタンサイズ
+	 * @param {number} buttonSideMargin - 取得するボタン
+	 * @param {number} buttonMargin - 取得するボタン
 	 * @return {string} 設定する左からの表示位置
 	 */
 	const getStyleLeftForNumberButton = (button: ButtonType, currentButtonSize: number, buttonSideMargin: number, buttonMargin: number): string => {
@@ -535,8 +593,8 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 
 	/**
 	 * 数字と演算子ボタンの表示非表示を切り替える
-	 * @property {ButtonType} button - 表示非表示を切り替えるボタン
-	 * @property {boolean} isVisible - 表示させるか否か
+	 * @param {ButtonType} button - 表示非表示を切り替えるボタン
+	 * @param {boolean} isVisible - 表示させるか否か
 	 */
 	const changeButtonVisible = (button: ButtonType, isVisible: boolean): void => {
 		// 表示非表示を切り替える
@@ -739,7 +797,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 
 	/**
 	 * 数字ボタンと演算子ボタンの色を取得
-	 * @property {ButtonType} button - 色を取得したいボタン
+	 * @param {ButtonType} button - 色を取得したいボタン
 	 * @returns {string} ボタンの色
 	 */
 	const getButtonColor = (button: ButtonType): string => {
@@ -763,36 +821,140 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 
 	/**
 	 * 計算の実行
-	 * @property {ButtonType} firstNumber - 1つ目の数字
-	 * @property {ButtonType} secondNumber - 2つ目の数字
-	 * @property {ButtonType} calcType - 演算子
+	 * @param {ButtonType} firstNumber - 1つ目の数字
+	 * @param {ButtonType} secondNumber - 2つ目の数字
+	 * @param {ButtonType} calcType - 演算子
 	 * @returns {string} 計算結果
 	 */
 	const calcNumber = (firstNumber: ButtonType, secondNumber: ButtonType, calcType: ButtonType): string => {
+		// 計算結果
+		let resultNumber = '';
+
+		// 数字ボタンに設定されている値を文字列で取得
+		const firstValue = getButtonValue(firstNumber);
+		const secondValue = getButtonValue(secondNumber);
+
 		// 足し算実行
 		if (calcType === ButtonType.Plus) {
-			return String(Number(getButtonNumber(firstNumber)) + Number(getButtonNumber(secondNumber)));
+			return String(Number(getButtonValue(firstNumber)) + Number(getButtonValue(secondNumber)));
 		}
 		else if (calcType === ButtonType.Minus) {
-			return String(Number(getButtonNumber(firstNumber)) - Number(getButtonNumber(secondNumber)));
+			return String(Number(getButtonValue(firstNumber)) - Number(getButtonValue(secondNumber)));
 		}
 		else if (calcType === ButtonType.Multiply) {
-			return String(Number(getButtonNumber(firstNumber)) * Number(getButtonNumber(secondNumber)));
+			return String(Number(getButtonValue(firstNumber)) * Number(getButtonValue(secondNumber)));
 		}
 		else if (calcType === ButtonType.Division) {
-			return getButtonNumber(firstNumber) + '/' + getButtonNumber(secondNumber);
+			resultNumber = calcDivision(firstValue, secondValue);
 		}
 		else {
 			throw new Error('Invalid value entered in calcNumber(MakeTen.tsx)');
 		}
+		
+		return resultNumber;
+	}
+
+	/**
+	 * 割り算の計算
+	 * @param {string} firstValue - 割られる値
+	 * @param {string} secondValue - 割る値
+	 * @returns {string} 計算結果
+	 */
+	const calcDivision = (firstValue: string, secondValue: string): string => {
+		// 計算結果
+		let resultNumber = '';
+
+		// 割られる値と割る値の文字列をそれぞれ数字の配列に変換
+		const firstValueArray = stringValueConvertNumberArray(firstValue);
+		const secondValueArray = stringValueConvertNumberArray(secondValue);
+
+		// どちらも値が分数の場合
+		if (firstValueArray.length > 1 && secondValueArray.length > 1) {
+			// 逆数の掛け算
+			const childNumber = firstValueArray[0] * secondValueArray[1]; // 分子を計算
+			const motherNumber = firstValueArray[1] * secondValueArray[0]; // 分母を計算 
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, motherNumber);
+		}
+		// 割られる値が分数の場合
+		else if (firstValueArray.length > 1) {
+			const motherNumber = firstValueArray[1] * secondValueArray[0] // 分母を計算
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(firstValueArray[0], motherNumber);
+		}
+		// 割る値が分数の場合
+		else if (secondValueArray.length > 1) {
+			const childNumber = firstValueArray[0] * secondValueArray[1]; // 分子を計算
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, secondValueArray[0]);
+		}
+		// どちらも値が分数でない場合
+		else {
+			// 割り切れる場合
+			if (firstValueArray[0] % secondValueArray[0] === 0) {
+				resultNumber = String(firstValueArray[0] / secondValueArray[0]);
+			}
+			// 分数となる場合
+			else {
+				// 約分した分数の文字列を取得
+				resultNumber = reduceFractions(firstValueArray[0], secondValueArray[0]);
+			}
+		}
+
+		return resultNumber;
+	}
+
+	/**
+	 * 値の文字列を数字の配列に変換(1/2 => [1,2])
+	 * @param {string} stringValue - 配列に変換する文字列
+	 * @returns {number[]} 数字の配列 
+	 */
+	const stringValueConvertNumberArray = (stringValue: string): number[] => {
+		// 変換結果
+		const resultArray: number[] = [];
+
+		// 分数の場合
+		if (stringValue.includes('/')) {
+			const slashIndex = stringValue.indexOf('/');
+			resultArray.push(Number(stringValue.substring(0, slashIndex))); // 分子を数字として格納
+			resultArray.push(Number(stringValue.substring(slashIndex + 1, stringValue.length))); // 分母を数字として格納
+		}
+		// 分数でない場合
+		else {
+			resultArray.push(Number(stringValue));
+		}
+
+		return resultArray;
+	}
+
+	/**
+	 * 分子と分母を約分した分数の文字列を取得
+	 * @param {number} childNumber - 分子の値
+	 * @param {number} motherNumber - 分母の値
+	 * @returns {string} 約分した分数の文字列 
+	 */
+	const reduceFractions = (childNumber: number, motherNumber: number): string => {
+		// 分子の値が分母の値以下の場合
+		const minValue = childNumber <= motherNumber ? childNumber : motherNumber;
+
+		// 最大公約数を求める
+		let greatestCommonDivisor = 1;
+		for (let i = minValue; i > 1; i--) {
+			// 最大公約数の場合
+			if (childNumber % i === 0 && motherNumber % i === 0) {
+				greatestCommonDivisor = i; // 最大公約数を更新
+				break;
+			}
+		}
+		return (childNumber / greatestCommonDivisor) + '/' + (motherNumber / greatestCommonDivisor);
 	}
 
 	/**
 	 * ボタンに設定されている数字を取得
-	 * @property {ButtonType} button - 数字を取得するボタン
+	 * @param {ButtonType} button - 数字を取得するボタン
 	 * @returns {string} ボタンに設定されている数字（文字）
 	 */
-	const getButtonNumber = (button: ButtonType): string => {
+	const getButtonValue = (button: ButtonType): string => {
 		if (button === ButtonType.FirstNumber) {
 			return String(problemNumbers[0]);
 		}
