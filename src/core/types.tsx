@@ -29,6 +29,18 @@ export enum ButtonType {
    */
   FourthNumber = 'fourth',
   /**
+   * 算出された1つ目の数字ボタン
+   */
+  FirstResultNumber = 'firstResult',
+  /**
+   * 算出された2つ目の数字ボタン
+   */
+  SecondResultNumber = 'secondResult',
+  /**
+   * 回答
+   */
+  AnswerNumber = 'answer',
+  /**
    * 「＋」ボタン
    */
   Plus = 'plus',
@@ -54,6 +66,9 @@ export enum ButtonType {
  * @property {string} lineHeight - 文字表示高さ
  * @property {string} top - 上からの表示位置
  * @property {string} left - 左からの表示位置
+ * @property {string} backgroundColor - 色
+ * @property {string} opacity - 透明度
+ * @property {VisibilityInButtonStyle} visibility - 表示非表示
  */
 export interface ButtonStyle {
 	width: string,
@@ -61,6 +76,9 @@ export interface ButtonStyle {
 	lineHeight: string,
   top: string,
 	left: string,
+  backgroundColor: string,
+  opacity: string,
+  visibility: VisibilityInButtonStyle,
 }
 
 /**
@@ -69,6 +87,9 @@ export interface ButtonStyle {
  * @property {ButtonStyle} second - 2つ目の数字ボタンに設定するスタイル
  * @property {ButtonStyle} third - 3つ目の数字ボタンに設定するスタイル
  * @property {ButtonStyle} fourth - 4つ目の数字ボタンに設定するスタイル
+ * @property {ButtonStyle} firstResult - 算出された1つ目の数字ボタンに設定するスタイル
+ * @property {ButtonStyle} secondResult - 算出された2つ目の数字ボタンに設定するスタイル
+ * @property {ButtonStyle} answer - 回答
  * @property {ButtonStyle} plus - 「＋」ボタンに設定するスタイル
  * @property {ButtonStyle} minus - 「ー」ボタンに設定するスタイル
  * @property {ButtonStyle} multiply - 「×」ボタンに設定するスタイル
@@ -79,6 +100,9 @@ export interface NumberCalcButtonStyles {
   [ButtonType.SecondNumber]: ButtonStyle,
   [ButtonType.ThirdNumber]: ButtonStyle,
   [ButtonType.FourthNumber]: ButtonStyle,
+  [ButtonType.FirstResultNumber]: ButtonStyle,
+  [ButtonType.SecondResultNumber]: ButtonStyle,
+  [ButtonType.AnswerNumber]: ButtonStyle,
   [ButtonType.Plus]: ButtonStyle,
   [ButtonType.Minus]: ButtonStyle,
   [ButtonType.Multiply]: ButtonStyle,
@@ -93,4 +117,18 @@ export interface NumberCalcButtonStyles {
 export interface ButtonAreaSize {
   width: number;
   height: number;
+}
+
+/**
+ * 数字ボタンと演算ボタンの表示非表示切り替え
+ */
+export enum VisibilityInButtonStyle {
+  /**
+   * 表示
+   */
+  Visible = 'unset',
+  /**
+   * 非表示
+   */
+  Hidden = 'hidden',
 }
