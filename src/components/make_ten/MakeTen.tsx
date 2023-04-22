@@ -833,7 +833,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		const secondValue = getButtonValue(secondNumber);
 
 		if (calcType === ButtonType.Plus) {
-			return String(Number(getButtonValue(firstNumber)) + Number(getButtonValue(secondNumber)));
+			resultNumber = calcPlus(firstValue, secondValue);
 		}
 		else if (calcType === ButtonType.Minus) {
 			resultNumber = calcMinus(firstValue, secondValue);
@@ -848,6 +848,58 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			throw new Error('Invalid value entered in calcNumber(MakeTen.tsx)');
 		}
 		
+		return resultNumber;
+	}
+
+	/**
+	 * 足し算の計算
+	 * @param {string} firstValue - 1つ目の値
+	 * @param {string} secondValue - 2つ目の値
+	 * @returns {string} 計算結果
+	 */
+	const calcPlus = (firstValue: string, secondValue: string): string => {
+		// 計算結果
+		let resultNumber = '';
+
+		// 2つの値の文字列をそれぞれ数字の配列に変換
+		const firstValueArray = stringValueConvertNumberArray(firstValue);
+		const secondValueArray = stringValueConvertNumberArray(secondValue);
+
+		// どちらも値が分数の場合
+		if (firstValueArray.length > 1 && secondValueArray.length > 1) {
+			// 分母の最小公倍数を求める
+			const leastCommonMultiple = getLeastCommonMultiple(firstValueArray[1], secondValueArray[1]);
+			// それぞれの分子を算出
+			const firstChildNumber = firstValueArray[0] * (leastCommonMultiple / firstValueArray[1]);
+			const secondChildNumber = secondValueArray[0] * (leastCommonMultiple / secondValueArray[1]);
+			// 分子同士を足し算する
+			const childNumber = firstChildNumber + secondChildNumber;
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, leastCommonMultiple);
+		}
+		// 1つ目の値が分数の場合
+		else if (firstValueArray.length > 1) {
+			// 2つ目の数字の分子を1つ目の数字の分母に合わせた値にする（通分）
+			const secondChildNumber = secondValueArray[0] * firstValueArray[1];
+			// 分子同士を足し算する
+			const childNumber = firstValueArray[0] + secondChildNumber;
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, firstValueArray[1]);
+		}
+		// 2つ目の値が分数の場合
+		else if (secondValueArray.length > 1) {
+			// 1つ目の数字の分子を2つ目の数字の分母に合わせた値にする（通分）
+			const firstChildNumber = firstValueArray[0] * secondValueArray[1];
+			// 分子同士を足し算する
+			const childNumber = firstChildNumber + secondValueArray[0];
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, secondValueArray[1]);
+		}
+		// どちらも値が分数でない場合
+		else {
+			resultNumber = String(firstValueArray[0] + secondValueArray[0]);
+		}
+
 		return resultNumber;
 	}
 
@@ -1070,6 +1122,12 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 				break;
 			}
 		}
+		// 分母が1となる場合
+		if (motherNumber / greatestCommonDivisor === 1) {
+			return String(childNumber / greatestCommonDivisor);
+		}
+
+		// 分母が0となる場合についてはuseEffect(selectButtons)にて'/0'を判定するためそのまま返す
 		return (childNumber / greatestCommonDivisor) + '/' + (motherNumber / greatestCommonDivisor);
 	}
 
