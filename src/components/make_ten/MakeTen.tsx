@@ -147,7 +147,6 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	 * 選択されたボタン配列の変更イベント
 	 */
 	useEffect(() => {
-		console.log('selectedButtons:[' + selectedButtons + ']'); // TODO: 動作確認のためコンソール出力
 		// 選択されたボタン配列に要素が3つ以上設定された場合
 		if (selectedButtons.length >= 3) {
 			// 一定時間待機後に選択されたボタンを中央に寄せる
@@ -486,7 +485,6 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 						invisibleNumberButtons.push(button);
 					}
 				});
-				console.log(invisibleNumberButtons); // TODO: 動作確認
 				// 1つ目の場合
 				if (initButton === ButtonType.FirstResultNumber) {
 					// 非表示の数字ボタンのうち、左から一番目のボタンの初期表示位置を設定する
@@ -838,7 +836,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			return String(Number(getButtonValue(firstNumber)) + Number(getButtonValue(secondNumber)));
 		}
 		else if (calcType === ButtonType.Minus) {
-			return String(Number(getButtonValue(firstNumber)) - Number(getButtonValue(secondNumber)));
+			resultNumber = calcMinus(firstValue, secondValue);
 		}
 		else if (calcType === ButtonType.Multiply) {
 			resultNumber = calcMultiply(firstValue, secondValue);
@@ -850,6 +848,58 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			throw new Error('Invalid value entered in calcNumber(MakeTen.tsx)');
 		}
 		
+		return resultNumber;
+	}
+
+	/**
+	 * 引き算の計算
+	 * @param {string} firstValue - 1つ目の値
+	 * @param {string} secondValue - 2つ目の値
+	 * @returns {string} 計算結果
+	 */
+	const calcMinus = (firstValue: string, secondValue: string): string => {
+		// 計算結果
+		let resultNumber = '';
+
+		// 2つの値の文字列をそれぞれ数字の配列に変換
+		const firstValueArray = stringValueConvertNumberArray(firstValue);
+		const secondValueArray = stringValueConvertNumberArray(secondValue);
+
+		// どちらも値が分数の場合
+		if (firstValueArray.length > 1 && secondValueArray.length > 1) {
+			// 分母の最小公倍数を求める
+			const leastCommonMultiple = getLeastCommonMultiple(firstValueArray[1], secondValueArray[1]);
+			// それぞれの分子を算出
+			const firstChildNumber = firstValueArray[0] * (leastCommonMultiple / firstValueArray[1]);
+			const secondChildNumber = secondValueArray[0] * (leastCommonMultiple / secondValueArray[1]);
+			// 分子同士を引き算する
+			const childNumber = firstChildNumber - secondChildNumber;
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, leastCommonMultiple);
+		}
+		// 1つ目の値が分数の場合
+		else if (firstValueArray.length > 1) {
+			// 2つ目の数字の分子を1つ目の数字の分母に合わせた値にする（通分）
+			const secondChildNumber = secondValueArray[0] * firstValueArray[1];
+			// 分子同士を引き算する
+			const childNumber = firstValueArray[0] - secondChildNumber;
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, firstValueArray[1]);
+		}
+		// 2つ目の値が分数の場合
+		else if (secondValueArray.length > 1) {
+			// 1つ目の数字の分子を2つ目の数字の分母に合わせた値にする（通分）
+			const firstChildNumber = firstValueArray[0] * secondValueArray[1];
+			// 分子同士を引き算する
+			const childNumber = firstChildNumber - secondValueArray[0];
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, secondValueArray[1]);
+		}
+		// どちらも値が分数でない場合
+		else {
+			resultNumber = String(firstValueArray[0] - secondValueArray[0]);
+		}
+
 		return resultNumber;
 	}
 
@@ -971,6 +1021,34 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		}
 
 		return resultArray;
+	}
+
+	/**
+	 * 最小公倍数を算出する
+	 * @param {number} firstNumber - 1つ目の数字
+	 * @param {number} secondNnumber - 2つ目の数字
+	 * @returns {number} 2つの数字の最小公倍数
+	 */
+	const getLeastCommonMultiple = (firstNumber: number, secondNumber: number): number => {
+		let resultNumber = firstNumber * secondNumber;
+
+		// 最小公倍数を探索する
+		firstNumberMultiple: for (let i = 1; i <= secondNumber; i++) {
+			for (let j = 1; j <= firstNumber; j++) {
+				const first = firstNumber * i;
+				const second = secondNumber * j;
+				// 最小公倍数を見つけた場合
+				if (first === second) {
+					resultNumber = first;
+					break firstNumberMultiple;
+				}
+				else if (first < second) {
+					continue firstNumberMultiple;
+				}
+			}
+		}
+
+		return resultNumber;
 	}
 
 	/**
