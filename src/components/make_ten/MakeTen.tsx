@@ -834,7 +834,6 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 		const firstValue = getButtonValue(firstNumber);
 		const secondValue = getButtonValue(secondNumber);
 
-		// 足し算実行
 		if (calcType === ButtonType.Plus) {
 			return String(Number(getButtonValue(firstNumber)) + Number(getButtonValue(secondNumber)));
 		}
@@ -842,7 +841,7 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			return String(Number(getButtonValue(firstNumber)) - Number(getButtonValue(secondNumber)));
 		}
 		else if (calcType === ButtonType.Multiply) {
-			return String(Number(getButtonValue(firstNumber)) * Number(getButtonValue(secondNumber)));
+			resultNumber = calcMultiply(firstValue, secondValue);
 		}
 		else if (calcType === ButtonType.Division) {
 			resultNumber = calcDivision(firstValue, secondValue);
@@ -851,6 +850,53 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			throw new Error('Invalid value entered in calcNumber(MakeTen.tsx)');
 		}
 		
+		return resultNumber;
+	}
+
+	/**
+	 * 掛け算の計算
+	 * @param {string} firstValue - 1つ目の値
+	 * @param {string} secondValue - 2つ目の値
+	 * @returns {string} 計算結果
+	 */
+	const calcMultiply = (firstValue: string, secondValue: string): string => {
+		// どちらか一方でも0の場合
+		if (firstValue === '0' || secondValue === '0') {
+			return '0';
+		}
+		
+		// 計算結果
+		let resultNumber = '';
+
+		// 2つの値の文字列をそれぞれ数字の配列に変換
+		const firstValueArray = stringValueConvertNumberArray(firstValue);
+		const secondValueArray = stringValueConvertNumberArray(secondValue);
+
+		// どちらも値が分数の場合
+		if (firstValueArray.length > 1 && secondValueArray.length > 1) {
+			// 分子と分母をそれぞれ掛け算
+			const childNumber = firstValueArray[0] * secondValueArray[0]; // 分子を計算
+			const motherNumber = firstValueArray[1] * secondValueArray[1]; // 分母を計算 
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, motherNumber);
+		}
+		// 1つ目の値が分数の場合
+		else if (firstValueArray.length > 1) {
+			const childNumber = firstValueArray[0] * secondValueArray[0] // 分子を計算
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, firstValueArray[1]);
+		}
+		// 2つ目の値が分数の場合
+		else if (secondValueArray.length > 1) {
+			const childNumber = firstValueArray[0] * secondValueArray[0]; // 分子を計算
+			// 約分した分数の文字列を取得
+			resultNumber = reduceFractions(childNumber, secondValueArray[1]);
+		}
+		// どちらも値が分数でない場合
+		else {
+			resultNumber = String(firstValueArray[0] * secondValueArray[0]);
+		}
+
 		return resultNumber;
 	}
 
