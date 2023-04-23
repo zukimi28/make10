@@ -34,14 +34,24 @@ noDuplicationNumbers.forEach((numbers) => {
   // 10が生成できた場合
   if (process != null) {
     // 問題配列に追加
-    problemList.push([...numbers, process]);
+    problemList.push({
+      problem: numbers,
+      answer: process,
+    });
   }
 });
 
 console.log('問題数:', problemList.length);
 
+const problemListHeader = 'export const problemList = [\n';
+const problemListFooter = '];'
+let problemListString = '';
+problemList.forEach(value => {
+  problemListString += '  { problem: [' + value.problem.join(',') + '], answer: \'' + value.answer + '\' },\n';
+});
+
 const fs = require('fs');
-fs.writeFileSync('src/assets/problem/problemList.csv', problemList.join('\n'));
+fs.writeFileSync('src/assets/problem/problemList.tsx', problemListHeader + problemListString + problemListFooter);
 console.log('出力完了');
 
 
