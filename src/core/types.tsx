@@ -9,6 +9,16 @@ export enum StorageData {
 }
 
 /**
+ * 問題情報
+ * @property {number[]} problem - 問題
+ * @property {string} answer - 答え
+ */
+export interface ProblemInfo {
+  problem: number[];
+  answer: string;
+}
+
+/**
  * ボタン種類
  */
 export enum ButtonType {
