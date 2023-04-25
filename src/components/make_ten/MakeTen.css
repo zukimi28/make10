@@ -29,3 +29,91 @@
   border-radius: 7px;
   cursor: pointer;
 }
+
+.star {
+  color: yellow;
+  position: absolute;
+  opacity: 0;
+  bottom: 0px;
+}
+
+.star-right-high {
+  right: 0px;
+}
+
+.star-left-high {
+  left: 0px;
+}
+
+.star-right-high-animation {
+  animation-name: starMoveRightHigh;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+}
+
+.star-left-high-animation {
+  animation-name: starMoveLeftHigh;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+}
+
+@keyframes starMoveRightHigh {
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 1;
+    transform: 
+      translate(20px, -24px)
+      rotate(0.8turn);
+  }
+  50% {
+    opacity: 1;
+    transform: 
+      translate(25px, -30px)
+      rotate(1turn);
+  }
+  75% {
+    opacity: 0.5;
+    transform: 
+      translate(38px, -20px)
+      rotate(1.5turn);
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate(50px, -10px)
+      rotate(2turn);
+  }
+}
+
+
+@keyframes starMoveLeftHigh {
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 1;
+    transform: 
+      translate(-20px, -24px)
+      rotate(0.8turn);
+  }
+  50% {
+    opacity: 1;
+    transform: 
+      translate(-25px, -30px)
+      rotate(1turn);
+  }
+  75% {
+    opacity: 0.5;
+    transform: 
+      translate(-38px, -20px)
+      rotate(1.5turn);
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate(-50px, -10px)
+      rotate(2turn);
+  }
+}
