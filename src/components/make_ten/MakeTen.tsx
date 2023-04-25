@@ -6,16 +6,18 @@ import './MakeTen.css';
 /**
  * MakeTenコンポーネントのprops
  * @property {number[]} problemNumbers - 問題の数字配列[4]
+ * @property {Function} correctAnswer - 問題正解処理
  */
 type Props = {
 	problemNumbers: number[];
+	correctAnswer: () => void;
 }
 
 /**
  * MakeTenコンポーネント
  * @returns MakeTenコンポーネント
  */
-const MakeTen = ({problemNumbers}: Props): JSX.Element => {
+const MakeTen = ({ problemNumbers, correctAnswer }: Props): JSX.Element => {
 	// 丸いボタンの色
 	const buttonColor = {
 		number: '#93c7c9',
@@ -64,10 +66,14 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 	const selectedButtonsCalcWaitTime: number = 200; // 選択したボタンの計算開始までの待機時間(ms)
 	const resultButtonVisibleWaitTime: number = 100; // 算出した数字を表示するまでの待機時間(ms)
 	const setPositionButtonWaitTime: number = 300; // 選択しているボタンをもとの位置に戻すまでの待機時間(ms)
+	const nextProblemWaitTime: number = 800; // 正解から次の問題までの待機時間(ms)
 	const failedWaitTime: number = 200; // 不正解時に回答を表示しておく時間(ms)
 	const maxAppContainerWidth: number = 500; // 最大アプリケーション幅(px)
 	let resizeEventSetTimeoutId: number = 0; // リサイズイベント時のsetTimeoutID
 	let buttonAnimationSetTimeoutId: number = 0; // ボタンアニメーションの一時解除setTimeoutID
+
+	// 初期表示フラグ
+	const [isInitDisplay, setIsInitDisplay] = useState(true);
 
 	// 選択されているボタン配列（[3]{数字, 演算子, 数字}）
 	const [selectedButtons, setSelectedButtons] = useState<ButtonType[]>([]);
@@ -145,6 +151,9 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 				}, resizeEventInterval);
 			}
 		});
+	
+		// 初期表示フラグをOFFにする
+		setIsInitDisplay(false);
 	}, []);
 
 	/**
@@ -262,7 +271,11 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 							}
 							// 正解時
 							else {
-								setIsStarAnimation(true); // 正解アニメーション実行
+								// 正解アニメーション実行
+								setIsStarAnimation(true);
+
+								// 正解時処理
+								correctAnswer(); 
 							}
 						}
 
@@ -279,6 +292,24 @@ const MakeTen = ({problemNumbers}: Props): JSX.Element => {
 			}, selectedButtonsCalcWaitTime);
 		}
 	}, [selectedButtons]);
+
+	/**
+	 * 問題変更時処理
+	 */
+	useEffect(() => {
+		// 初期表示時の場合
+		if (isInitDisplay) {
+			return; // 後続処理をスキップ
+		}
+
+		window.setTimeout(() => {
+			// ボタンを初期位置に戻す
+			initAllButtonLayout(buttonSize, buttonAreaSize);
+
+			// 正解時のスターアニメーション実行フラグをOFF（ボタン有効化）
+			setIsStarAnimation(false);
+		}, nextProblemWaitTime);
+	}, [problemNumbers]);
 
 	/**
 	 * ボタンのアニメーションの一時解除

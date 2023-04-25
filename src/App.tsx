@@ -15,7 +15,7 @@ function App() {
   const problemCount: number = 5; // 出題する問題数
 
   // 問題情報リスト
-  const [problemInfoList, setProblemInfoList] = useState<ProblemInfo[]>();
+  const [problemInfoList, setProblemInfoList] = useState<ProblemInfo[]>([]);
 
   // 問題の数字配列[4]
 	const [problemNumbers, setProblemNumbers] = useState<number[]>([0, 0, 0, 0]);
@@ -25,6 +25,9 @@ function App() {
 
   // 遊び方ダイアログの初期表示フラグ
   const [isInitDisplay, setIsInitDisplay] = useState(true);
+
+  // 正解数
+  const [correctAnswerCount, setCorrectAnswerCount] = useState(0);
 
   /**
 	 * 初回レンダリング時処理
@@ -43,14 +46,39 @@ function App() {
     setProblemInfoList(problemInfos);
 
     const newProblemNumbers = [...problemNumbers]; // 配列の値渡し
-    newProblemNumbers[0] = problemInfos[0].problem[0];
-    newProblemNumbers[1] = problemInfos[0].problem[1];
-    newProblemNumbers[2] = problemInfos[0].problem[2];
-    newProblemNumbers[3] = problemInfos[0].problem[3];
+    newProblemNumbers[0] = problemInfos[correctAnswerCount].problem[0];
+    newProblemNumbers[1] = problemInfos[correctAnswerCount].problem[1];
+    newProblemNumbers[2] = problemInfos[correctAnswerCount].problem[2];
+    newProblemNumbers[3] = problemInfos[correctAnswerCount].problem[3];
 
     // 問題の更新
     setProblemNumbers(newProblemNumbers);
 	}, []);
+
+  /**
+   * 問題正解イベント
+   */
+  const handleCorrectAnswer = (): void => {
+    // 最終問題に正解した場合
+    if (correctAnswerCount >= problemCount - 1) {
+      // TODO: リザルト画面の表示
+      return; // 後続処理をスキップする 
+    }
+
+    // 正解数を加算
+    const newCorrectAnswerCount = correctAnswerCount + 1;
+    setCorrectAnswerCount(newCorrectAnswerCount);
+
+    // 新しい問題を設定
+    const newProblemNumbers = [...problemNumbers]; // 配列の値渡し
+    newProblemNumbers[0] = problemInfoList[newCorrectAnswerCount].problem[0];
+    newProblemNumbers[1] = problemInfoList[newCorrectAnswerCount].problem[1];
+    newProblemNumbers[2] = problemInfoList[newCorrectAnswerCount].problem[2];
+    newProblemNumbers[3] = problemInfoList[newCorrectAnswerCount].problem[3];
+
+    // 問題の更新
+    setProblemNumbers(newProblemNumbers);
+  }
 
   /**
    * 現在日付の取得(YYYYMMDD)
@@ -143,7 +171,10 @@ function App() {
               changeHowToPlayDialog(true);
             }}
           />
-          <MakeTen problemNumbers={problemNumbers} />
+          <MakeTen
+            problemNumbers={problemNumbers}
+            correctAnswer={handleCorrectAnswer}
+          />
         </div>
       </div>
     </div>

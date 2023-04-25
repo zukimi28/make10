@@ -47,13 +47,13 @@
 
 .star-right-high-animation {
   animation-name: starMoveRightHigh;
-  animation-duration: 1s;
+  animation-duration: 0.8s;
   animation-timing-function: linear;
 }
 
 .star-left-high-animation {
   animation-name: starMoveLeftHigh;
-  animation-duration: 1s;
+  animation-duration: 0.8s;
   animation-timing-function: linear;
 }
 
