@@ -230,15 +230,19 @@ function createTen(numbers) {
                       }
                       // 1回目のみ足し算か引き算の場合
                       else if (i === 0 || i === 1) {
-                        process = '(' + secondProcess + ')' + getCalc(k) + firstProcess;
+                        process = secondProcess + getCalc(k) + '(' + firstProcess + ')';
                       }
                       // 2回目のみ足し算か引き算の場合
                       else if (j === 0 || j === 1) {
-                        process = secondProcess + getCalc(k) + '(' + firstProcess + ')';
+                        process = '(' + secondProcess + ')' + getCalc(k) + firstProcess;
                       }
                       else {
                         process = secondProcess + getCalc(k) + firstProcess;
                       }
+                    }
+                    // 最終演算が引き算の場合
+                    else if (k === 1) {
+                      process = secondProcess + getCalc(k) + '(' + firstProcess + ')';
                     }
                     else {
                       process = secondProcess + getCalc(k) + firstProcess;
