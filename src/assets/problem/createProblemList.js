@@ -180,6 +180,8 @@ function createTen(numbers) {
               // 最終演算
               for (let k = 0; k < 4; k++) {
                 const answer = doCalc(fourthNumbers[0], fourthNumbers[1], k);
+                // 引き算、割り算用に順番が逆の場合も計算
+                const _answer = doCalc(fourthNumbers[1], fourthNumbers[0], k);
                 // 10の計算に成功した場合
                 if (answer === 10) {
                   let process = '';
@@ -213,6 +215,41 @@ function createTen(numbers) {
                   }
                   else {
                     process = fourthNumbers[0] + getCalc(k) + secondProcess;
+                  }
+                  return process;
+                  // 順番を逆の時に計算が成功した場合
+                } else if (_answer === 10) {
+                  let process = '';
+                  // 2回目の演算で1回目の計算結果が使用されなかった場合
+                  if (thirdIndex < secondNumbers.length - 1 && fourthIndex < thirdNumbers.length - 1) {
+                    // 最終演算が掛け算か割り算の場合
+                    if (k === 2 || k === 3) {
+                      // 1回目2回目ともに足し算か引き算の場合
+                      if ((i === 0 || i === 1) && (j === 0 || j === 1)) {
+                        process = '(' + secondProcess + ')' + getCalc(k) + '(' + firstProcess + ')';
+                      }
+                      // 1回目のみ足し算か引き算の場合
+                      else if (i === 0 || i === 1) {
+                        process = '(' + secondProcess + ')' + getCalc(k) + firstProcess;
+                      }
+                      // 2回目のみ足し算か引き算の場合
+                      else if (j === 0 || j === 1) {
+                        process = secondProcess + getCalc(k) + '(' + firstProcess + ')';
+                      }
+                      else {
+                        process = secondProcess + getCalc(k) + firstProcess;
+                      }
+                    }
+                    else {
+                      process = secondProcess + getCalc(k) + firstProcess;
+                    }
+                  }
+                  // 括弧で囲む必要がある場合
+                  else if ((j === 0 || j === 1) && (k === 2 || k === 3)) {
+                    process = '(' + secondProcess + ')' + getCalc(k) + fourthNumbers[0];
+                  }
+                  else {
+                    process = secondProcess + getCalc(k) + fourthNumbers[0];
                   }
                   return process;
                 }
